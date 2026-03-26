@@ -6,6 +6,7 @@
 /* 0. HEADER */
 /* 1. BODY */
 /* 2. MAIN */
+/* 2-a. Grid */
 /* 3. Fragment vs Chapter styling */
 /* 4. Layout */
 /* 5. Titles */
@@ -59,6 +60,8 @@ body {
   grid: 1fr 1fr 1fr / 1fr 1fr 1fr;
   gap: 5px;
 }
+
+/* 2-a. Grid */
 .grid-container {
   display: grid;
   grid: 100px 100px 100px 100px / 100px 100px 100px 100px 100px;
@@ -69,9 +72,10 @@ body {
   text-align: center;
   gap:5px;
 }
-.grid-container div {
+.grid-container > div {
   background-color: #f1f1f1;
   border: 1px solid black;
+  color:#888;
   padding: 10px;
   font-size: 30px;
   text-align: center;
@@ -85,6 +89,7 @@ body {
   height:99px;
   background-color: #777;
 }
+
 
 /* 3. Fragment vs Chapter styling */
 body.fragment {

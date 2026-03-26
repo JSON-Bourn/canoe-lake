@@ -8,6 +8,6 @@
 //This example function simply makes an element draggable...
     //https://jqueryui.com/draggable/
     $( function() {
-      $( ".draggable" ).draggable();
+      $( ".draggable" ).draggable({ snap: ".grid-cell" });
     });
 
