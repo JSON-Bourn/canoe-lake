@@ -2,6 +2,8 @@
 /* MAIN STYLESHEET FOR CANOE LAKE */
 /*********** JSON BOURN ***********/
 /* TABLE OF CONTENTS */
+/* root colours */
+/* 0. HEADER */
 /* 1. BODY */
 /* 2. MAIN */
 /* 3. Fragment vs Chapter styling */
@@ -11,12 +13,36 @@
 /* 7. Buttons */
 /**********************************/
 
+:root {
+  --main-bg: #222;
+  --fragment-bg: #0d0d0d;
+}
+
+/* 0. HEADER */
+a {
+  text-decoration: none;
+  color:yellow;
+}
+a:hover {
+  color:orange;
+}
+li {
+  list-style-type: none;
+}
+.nav-list {
+  display:flex;
+  flex-flow: row wrap;
+  gap:1em;
+}
+
 /* 1. BODY */
 body {
   margin: 0;
   font-family: "Courier New", monospace;
   color: #e6e6e6;
+  background-color: var(--main-bg);
   display: flex;
+  flex-flow: column wrap;
   justify-content: center;
   align-items: center;
   height: 100vh;
@@ -43,30 +69,30 @@ body {
   text-align: center;
   gap:5px;
 }
-  .grid-container div {
-    background-color: #f1f1f1;
-    border: 1px solid black;
-    padding: 10px;
-    font-size: 30px;
-    text-align: center;
-  }
+.grid-container div {
+  background-color: #f1f1f1;
+  border: 1px solid black;
+  padding: 10px;
+  font-size: 30px;
+  text-align: center;
+}
 
-  #drag-card {
-    display:flex;
-    justify-content: center;
-    align-items: center;
-    width: 99px;
-    height:99px;
-    background-color: #777;
-  }
+#drag-card {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  width: 99px;
+  height:99px;
+  background-color: #777;
+}
 
 /* 3. Fragment vs Chapter styling */
 body.fragment {
-  background-color: #0d0d0d;
+  background-color: var(--fragment-bg);
 }
 
 body.chapter {
-  background-color: #111;
+  background-color: var(--main-bg);
 }
 
 body.credits {
