@@ -17,6 +17,10 @@ body.chapter {
   background-color: #111;
 }
 
+body.credits {
+  background-color: #222;
+}
+
 /* Layout */
 .container {
   text-align: center;
