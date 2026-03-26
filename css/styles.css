@@ -1,0 +1,62 @@
+body {
+  margin: 0;
+  font-family: "Courier New", monospace;
+  color: #e6e6e6;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Fragment vs Chapter styling */
+body.fragment {
+  background-color: #0d0d0d;
+}
+
+body.chapter {
+  background-color: #111;
+}
+
+/* Layout */
+.container {
+  text-align: center;
+  max-width: 400px;
+  padding: 20px;
+}
+
+/* Titles */
+.title {
+  font-size: 1.4rem;
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #aaa;
+  margin-bottom: 20px;
+}
+
+/* Image */
+img {
+  width: 100%;
+  border: 2px solid #444;
+  margin-bottom: 20px;
+}
+
+/* Buttons */
+.controls button {
+  background: none;
+  border: 1px solid #888;
+  color: #e6e6e6;
+  padding: 10px 15px;
+  margin: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.2s;
+}
+
+.controls button:hover {
+  background-color: #222;
+  border-color: #fff;
+}

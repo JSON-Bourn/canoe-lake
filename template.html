@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Canoe Lake</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="fragment"> <!-- change to chapter for chapter files -->
+
+<div class="container">
+  <div class="title" id="title">FRAGMENT 01</div> <!-- change number -->
+  <div class="subtitle" id="subtitle">Audio Evidence</div> <!-- change for chapters -->
+
+  <!-- IMAGE -->
+  <img id="cardImage" src="assets/fragments/fragment01.jpg" alt="Card Image"> <!-- change source for chapters -->
+
+  <!-- AUDIO -->
+  <audio id="audio">
+    <source id="audioSource" src="assets/fragments/gangbusters.mp3" type="audio/mpeg"> <!-- change source for chapters -->
+  </audio>
+
+  <!-- CONTROLS -->
+  <div class="controls">
+    <button id="playBtn">PLAY</button>
+    <button id="pauseBtn">PAUSE</button>
+    <button id="replayBtn">REPLAY</button>
+  </div>
+</div>
+
+<script>
+ var START = document.getElementById("playBtn"); // variable to hold the start button element
+ var STOP = document.getElementById("pauseBtn"); // variable to hold the stop button element
+ var REPLAY = document.getElementById("replayBtn"); // variable to hold the replay button element
+ 
+ //Just like other elements, we start by creating a variable to hold the element...
+ var MyAudioElement = document.getElementById("audio"); // variable to hold the audio element
+ 
+ //Now we can use the media API methods to control playback.
+ START.addEventListener('click', function(){
+	MyAudioElement.play();
+ });
+ 
+  STOP.addEventListener('click', function(){
+	MyAudioElement.pause();
+	MyAudioElement.currentTime = 0;
+ });
+ REPLAY.addEventListener('click', function(){
+	MyAudioElement.currentTime = 0;
+	MyAudioElement.play();
+ });
+ //Notice above, there isn't a .stop() method. We use .pause() to stop the track where it is on the time line, then set the .currentTime property to 0, effectively returning the "play head" to the start of the audio.
+</script>
+
+</body>
+</html>
