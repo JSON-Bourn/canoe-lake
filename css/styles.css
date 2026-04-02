@@ -12,6 +12,7 @@
 /* 5. Titles */
 /* 6. Images */
 /* 7. Buttons */
+/* 8. Media Queries */
 /**********************************/
 
 :root {
@@ -78,9 +79,8 @@ body {
   gap:5px;
 }
 .fragment-grid > div {
-  background-color: #f1f1f1;
-  border: 1px solid black;
-  color:#888;
+  background-color: var(--fragment-bg);
+  color:white;
   padding: 10px;
   font-size: 30px;
   text-align: center;
@@ -90,8 +90,8 @@ body {
   display:flex;
   justify-content: center;
   align-items: center;
-  width: 99px;
-  height:99px;
+  width: 100px;
+  height:100px;
   background-color: #777;
 }
 
@@ -151,4 +151,47 @@ img {
 .controls button:hover {
   background-color: #222;
   border-color: #fff;
+}
+
+/* 8. Media Queries */
+/* Styles for screens 600px wide or less (e.g., phones) */
+@media (max-width: 600px) {
+
+  html, body {
+    height:100vh;
+    overflow: hidden;
+  }
+
+h1, h2 {
+  font-size: medium;
+}
+
+
+.fragment-grid {
+  display: grid;
+  grid: 60px 60px 60px / 60px 60px 60px;
+  background-color: #f1f1f1;
+  border: 1px solid black;
+  padding: 10px;
+  font-size: 20px;
+  text-align: center;
+  gap:5px;
+}
+.fragment-grid > div {
+  background-color: var(--fragment-bg);
+  color:white;
+  padding: 10px;
+  font-size: 20px;
+  text-align: center;
+}
+
+#drag-card {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  width: 60px;
+  height:60px;
+  background-color: #777;
+}
+
 }
