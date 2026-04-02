@@ -62,9 +62,13 @@ body {
 }
 
 /* 2-a. Grid */
-.grid-container {
+/* TODO: create separate grid for chapter audio cards */
+/* .chapter-grid {
+
+} */
+.fragment-grid {
   display: grid;
-  grid: 100px 100px 100px 100px / 100px 100px 100px 100px 100px;
+  grid: 100px 100px 100px / 100px 100px 100px;
   background-color: #f1f1f1;
   border: 1px solid black;
   padding: 10px;
@@ -72,7 +76,7 @@ body {
   text-align: center;
   gap:5px;
 }
-.grid-container > div {
+.fragment-grid > div {
   background-color: #f1f1f1;
   border: 1px solid black;
   color:#888;
