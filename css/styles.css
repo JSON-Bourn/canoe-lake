@@ -185,7 +185,7 @@ h1, h2 {
   text-align: center;
 }
 
-#drag-card {
+.drag-card {
   display:flex;
   justify-content: center;
   align-items: center;
