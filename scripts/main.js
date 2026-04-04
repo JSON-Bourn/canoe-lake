@@ -5,9 +5,20 @@
 
 // Main Logic File for Solve Page
 
-//This example function simply makes an element draggable...
-    //https://jqueryui.com/draggable/
-    $( function() {
-      $( ".draggable" ).draggable({ snap: ".grid-cell", snapmode: "outer" });
-    });
+document.addEventListener("DOMContentLoaded", function() {
 
+  gsap.registerPlugin(Draggable) 
+
+  Draggable.create('.draggable', {
+    // type: 'y',
+    // bounds: document.getElementById('body'),
+    inertia: true,
+    onClick: function () {
+    console.log('clicked');
+    },
+    onDragEnd: function () {
+    console.log('drag ended');
+    }
+  });
+
+});
