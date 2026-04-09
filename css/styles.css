@@ -16,17 +16,17 @@
 /**********************************/
 
 :root {
-  --main-bg: #222;
-  --fragment-bg: #0d0d0d;
+  --main-bg: #141515;
+  --fragment-bg: #141515;
 }
 
 /* 0. HEADER */
 a {
   text-decoration: none;
-  color:yellow;
+  color:#F1DD42;
 }
 a:hover {
-  color:orange;
+  color:#F1DD4280;
 }
 li {
   list-style-type: none;
@@ -41,7 +41,7 @@ li {
 body {
   margin: 0;
   font-family: "Courier New", monospace;
-  color: #e6e6e6;
+  color: #F1DD42;
   background-color: var(--main-bg);
   display: flex;
   flex-flow: column wrap;
@@ -95,6 +95,18 @@ body {
   background-color: #777;
 }
 
+.instructions {
+  font-size: 0.8rem;
+  color: #F1DD42;
+  margin-top: 10px;
+  text-align: left;
+}
+
+.begin-btn-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
 
 /* 3. Fragment vs Chapter styling */
 body.fragment {
@@ -137,10 +149,27 @@ img {
   margin-bottom: 20px;
 }
 
+.begin-btn {
+  background: none;
+  border: 1px solid #F1DD42;
+  color: #F1DD42;
+  padding: 10px 15px;
+  margin: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.2s;
+}
+
+.camera-btn-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
 /* 7. Buttons */
 .controls button {
   background: none;
-  border: 1px solid #888;
+  border: 1px solid #F1DD42;
   color: #F1DD42;
   padding: 10px 15px;
   margin: 5px;
@@ -151,7 +180,7 @@ img {
 
 .controls button:hover {
   background-color: #222;
-  border-color: #fff;
+  border-color: #F1DD4280;
 }
 
 /* 8. Media Queries */
