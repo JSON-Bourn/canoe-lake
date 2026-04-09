@@ -15,13 +15,50 @@
 /* 8. Media Queries */
 /**********************************/
 
+@font-face {
+  font-family: "F25 Executive";
+  src: url("../f25-executive-regular-opentype_ufonts.com.otf") format("opentype");
+  font-display: swap;
+}
+
 :root {
   --main-bg: #141515;
   --fragment-bg: #141515;
 }
 
 /* 0. HEADER */
+header {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nav-bar {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+h1 {
+  font-size: 82pt;
+}
+
+h2 {
+  font-size: 54pt;
+}
+
+h3,
+p {
+  font-size: 32pt;
+}
+
+body.how-to-play .instructions p {
+  font-size: 24pt;
+}
+
 a {
+  font-size: 48pt;
   text-decoration: none;
   color:#F1DD42;
 }
@@ -34,13 +71,20 @@ li {
 .nav-list {
   display:flex;
   flex-flow: row wrap;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
   gap:1em;
+}
+
+.nav-list a {
+  padding: 0 0.5em;
 }
 
 /* 1. BODY */
 body {
   margin: 0;
-  font-family: "Courier New", monospace;
+  font-family: "F25 Executive", "Courier New", monospace;
   color: #F1DD42;
   background-color: var(--main-bg);
   display: flex;
@@ -119,6 +163,69 @@ body.chapter {
 
 body.credits {
   background-color: #222;
+  height: auto;
+  min-height: 100vh;
+  overflow-y: auto;
+  justify-content: flex-start;
+  padding: 32px 20px 48px;
+}
+
+body.credits .container {
+  width: min(1100px, 92vw);
+  max-width: none;
+  text-align: left;
+  padding: 36px;
+  border: 1px solid #F1DD4244;
+  background: #171717;
+}
+
+body.credits h1,
+body.credits h2 {
+  text-align: center;
+}
+
+body.credits h1 {
+  margin: 0;
+  font-size: 60pt;
+}
+
+body.credits h2 {
+  margin: 8px 0 28px;
+  font-size: 36pt;
+}
+
+body.credits .credits-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 22px;
+}
+
+body.credits .credits-section {
+  padding: 20px;
+  border: 1px solid #F1DD4233;
+  background-color: #1d1d1d;
+}
+
+body.credits .credits-section h3 {
+  margin: 0 0 10px;
+  font-size: 32pt;
+}
+
+body.credits .credits-section ul {
+  margin: 0;
+  padding: 0;
+}
+
+body.credits .credits-section li {
+  margin: 0 0 10px;
+  font-size: 22pt;
+  line-height: 1.25;
+}
+
+body.camera-view {
+  height: auto;
+  min-height: 100vh;
+  overflow-y: auto;
 }
 
 /* 4. Layout */
@@ -149,6 +256,18 @@ img {
   margin-bottom: 20px;
 }
 
+body.fragment #cardImage {
+  width: 125px;
+  height: 103px;
+  object-fit: cover;
+}
+
+body.chapter #cardImage {
+  width: 214px;
+  height: 176px;
+  object-fit: cover;
+}
+
 .begin-btn {
   background: none;
   border: 1px solid #F1DD42;
@@ -156,14 +275,44 @@ img {
   padding: 10px 15px;
   margin: 5px;
   cursor: pointer;
-  font-size: 0.9rem;
+  font-size: inherit;
   transition: 0.2s;
 }
 
 .camera-btn-container {
   display: flex;
   justify-content: center;
+  gap: 12px;
   margin-top: 20px;
+}
+
+#cameraBtn,
+#stopCameraBtn {
+  background: none;
+  border: 1px solid #F1DD42;
+  color: #F1DD42;
+  padding: 12px 18px;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+.camera-preview {
+  width: min(92vw, 520px);
+  margin: 18px auto 8px;
+  border: 2px solid #F1DD42;
+  background-color: #000;
+}
+
+#cameraFeed {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.camera-status {
+  margin: 10px 0 0;
+  font-size: 20pt;
+  text-align: center;
 }
 
 /* 7. Buttons */
@@ -176,6 +325,14 @@ img {
   cursor: pointer;
   font-size: 0.9rem;
   transition: 0.2s;
+}
+
+#playBtn,
+#pauseBtn,
+#replayBtn,
+#skipBtn {
+  width: 150px;
+  height: 150px;
 }
 
 .controls button:hover {
@@ -191,11 +348,6 @@ img {
     height:100vh;
     overflow: hidden;
   }
-
-h1, h2 {
-  font-size: medium;
-}
-
 
 .fragment-grid {
   display: grid;

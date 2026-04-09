@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Canoe Lake</title>
   <link rel="stylesheet" href="./css/styles.css">
+  <script src="./scripts/camera-view.js" defer></script>
 </head>
 <body class="camera-view"> <!-- change to fragment for fragment files -->
 
@@ -13,11 +15,21 @@
 <!-- Button to open camera on mobile -->
   <div class="camera-btn-container">
     <button id="cameraBtn">OPEN CAMERA</button>
+    <button id="stopCameraBtn" hidden>STOP CAMERA</button>
   </div>
+
+  <div class="camera-preview" id="cameraPreview" hidden>
+    <video id="cameraFeed" playsinline autoplay muted></video>
+  </div>
+
+  <p id="cameraStatus" class="camera-status" aria-live="polite">Tap OPEN CAMERA to scan a QR code.</p>
 
 <!-- Instructions -->
 <div class="instructions" id="instructions">
   <p>Scan a Fragment With Your Camera.</p>
+
+</div>
+</div>
 
 </body>
 </html>
