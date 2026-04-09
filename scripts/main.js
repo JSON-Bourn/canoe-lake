@@ -27,7 +27,27 @@ document.addEventListener("DOMContentLoaded", function() {
     },
     onDragEnd: function () {
     console.log('drag ended');
+    console.log('Running update');
+    update();
     }
   });
+
+  //Testing function
+  function update() {
+  const elem = document.getElementById('snaptarget');
+  const rect = elem.getBoundingClientRect();
+
+  for (const key in rect) {
+        let data;
+        data = `${key} : ${rect[key]}`;
+        console.log(data);
+    }
+  }
+
+  document.addEventListener("click", update);
+  update();
+
+
+
 
 });
