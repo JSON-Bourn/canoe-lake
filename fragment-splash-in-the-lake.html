@@ -24,6 +24,7 @@
     <button id="playBtn">PLAY</button>
     <button id="pauseBtn">PAUSE</button>
     <button id="replayBtn">REPLAY</button>
+    <button id="skipBtn">SKIP</button>
   </div>
 </div>
 
@@ -31,7 +32,7 @@
  var START = document.getElementById("playBtn"); // variable to hold the start button element
  var STOP = document.getElementById("pauseBtn"); // variable to hold the stop button element
  var REPLAY = document.getElementById("replayBtn"); // variable to hold the replay button element
- 
+ var SKIP = document.getElementById("skipBtn"); // variable to hold the skip button element
  //Just like other elements, we start by creating a variable to hold the element...
  var MyAudioElement = document.getElementById("audio"); // variable to hold the audio element
  
@@ -47,6 +48,9 @@
  REPLAY.addEventListener('click', function(){
 	MyAudioElement.currentTime = 0;
 	MyAudioElement.play();
+ });
+ SKIP.addEventListener('click', function(){
+	MyAudioElement.currentTime = MyAudioElement.duration;
  });
  //Notice above, there isn't a .stop() method. We use .pause() to stop the track where it is on the time line, then set the .currentTime property to 0, effectively returning the "play head" to the start of the audio.
 </script>

@@ -121,11 +121,12 @@ body.credits {
   font-size: 1.4rem;
   margin-bottom: 10px;
   letter-spacing: 2px;
+  color: #F1DD42;
 }
 
 .subtitle {
   font-size: 0.9rem;
-  color: #aaa;
+  color: #F1DD42;
   margin-bottom: 20px;
 }
 
@@ -140,7 +141,7 @@ img {
 .controls button {
   background: none;
   border: 1px solid #888;
-  color: #e6e6e6;
+  color: #F1DD42;
   padding: 10px 15px;
   margin: 5px;
   cursor: pointer;
