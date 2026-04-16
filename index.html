@@ -18,41 +18,46 @@
     <h2 id="logo">Canoe Lake</h2>
     <nav class="nav-bar">
       <ul class="nav-list">
-        <li><a href="./">Solve</a></li>
-        <li><a href="./template.html">Fragment</a></li>
-        <li><a href="./credits.html">Credits</a></li>
+        <li>
+          <h3>
+            <a href="./">Solve</a>
+          </h3>
+        </li>
+        <li>
+          <h3>
+            <a href="./template.html">Fragment</a>
+          </h3>
+        </li>
+        <li>
+          <h3>
+            <a href="./credits.html">Credits</a>
+          </h3>
+        </li>
       </ul>
     </nav>
   </header>
 
   <h1>Canoe Lake Solve Page</h1>
 <section class="main">
-  <div class="card-start">
-    <div id="tester" class="draggable drag-card">Drag Me!</div>
-    <div class="draggable drag-card">Drag Me!</div>
-    <div class="draggable drag-card">Drag Me!</div>
-    <div class="draggable drag-card">Drag Me!</div>
-    <div class="draggable drag-card">Drag Me!</div>
-    <div class="draggable drag-card">Drag Me!</div>
-    <div class="draggable drag-card">Drag Me!</div>
-    <div class="draggable drag-card">Drag Me!</div>
-    <div class="draggable drag-card">Drag Me!</div>
+  <div class="fragment-grid">
+    <div id="g1" class="grid-cell">F1</div>
+    <div id="g2" class="grid-cell">F2</div>
+    <div id="g3" class="grid-cell">F3</div>
   </div>
-  <!-- TODO: Make this Grid Snappable! -->
-  <div class="fragment-grid" id="snaptarget">
-    <div class="grid-cell">snap here</div>
-    <div class="grid-cell">snap here</div>
-    <div class="grid-cell">snap here</div>
-    <div class="grid-cell">snap here</div>
-    <div class="grid-cell">snap here</div>
-    <div class="grid-cell">snap here</div>
-    <div class="grid-cell">snap here</div>
-    <div class="grid-cell">snap here</div>
-    <div class="grid-cell">snap here</div>
-
-
+  <div class="card-start">
+    <div id=f1 class="draggable drag-card stacked">C1 F1</div>
+    <div id=f2 class="draggable drag-card stacked">C1 F2</div>
+    <div id=f3 class="draggable drag-card stacked">C1 F3</div>
+    <div id=f4 class="draggable drag-card stacked">C2 F1</div>
+    <div id=f5 class="draggable drag-card stacked">C2 F2</div>
+    <div id=f6 class="draggable drag-card stacked">C2 F3</div>
+    <div id=f7 class="draggable drag-card stacked">C3 F1</div>
+    <div id=f8 class="draggable drag-card stacked">C3 F2</div>
+    <div id=f9 class="draggable drag-card stacked">C3 F3</div>
   </div>
 </section>
+<button class="spread">Spread Cards</button>
+<!-- <button class="shuffle">Shuffle Cards</button> -->
 
 
 

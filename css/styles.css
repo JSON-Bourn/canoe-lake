@@ -41,16 +41,16 @@ header {
 }
 
 h1 {
-  font-size: 82pt;
+  font-size: 3em;
 }
 
 h2 {
-  font-size: 54pt;
+  font-size: 2.5em;
 }
 
 h3,
 p {
-  font-size: 32pt;
+  font-size: 1.2em;
 }
 
 body.how-to-play .instructions p {
@@ -58,7 +58,7 @@ body.how-to-play .instructions p {
 }
 
 a {
-  font-size: 48pt;
+  font-size: 1.2em;
   text-decoration: none;
   color:#F1DD42;
 }
@@ -98,14 +98,21 @@ body {
 /* 2. MAIN */
 .main {
   display:flex;
-  flex-flow: row wrap;
+  flex-flow: column wrap;
   justify-content: space-around;
 }
 .card-start {
   display:grid;
-  grid: 1fr 1fr 1fr / 1fr 1fr 1fr;
+  grid: auto;
   gap: 5px;
 }
+.stacked {
+  grid-row:1;
+  grid-column:1;
+}
+/* .draggable {
+
+} */
 
 /* 2-a. Grid */
 /* TODO: create separate grid for chapter audio cards */
@@ -114,9 +121,8 @@ body {
 } */
 .fragment-grid {
   display: grid;
-  grid: 100px 100px 100px / 100px 100px 100px;
+  grid: 100px / 100px 100px 100px;
   background-color: #f1f1f1;
-  border: 1px solid black;
   padding: 10px;
   font-size: 30px;
   text-align: center;
@@ -135,7 +141,7 @@ body {
   justify-content: center;
   align-items: center;
   width: 100px;
-  height:100px;
+  height: 100px;
   background-color: #777;
 }
 
