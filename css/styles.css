@@ -287,7 +287,10 @@ body.chapter #cardImage {
 }
 
 #cameraBtn,
-#stopCameraBtn {
+#stopCameraBtn,
+#startBtn,
+#stopBtn,
+#restartBtn {
   background: none;
   border: 1px solid #F1DD42;
   color: #F1DD42;
@@ -304,6 +307,12 @@ body.chapter #cardImage {
 }
 
 #cameraFeed {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+#video {
   width: 100%;
   height: auto;
   display: block;
@@ -327,6 +336,15 @@ body.chapter #cardImage {
 #scanLink {
   display: inline-block;
   margin-top: 8px;
+}
+
+#fileInput {
+  margin-top: 8px;
+  color: #F1DD42;
+}
+
+#result.flash {
+  color: #fff58a;
 }
 
 /* 7. Buttons */

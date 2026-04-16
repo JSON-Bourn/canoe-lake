@@ -1,148 +1,104 @@
-document.addEventListener("DOMContentLoaded", function () {
-  const openButton = document.getElementById("cameraBtn");
-  const stopButton = document.getElementById("stopCameraBtn");
-  const preview = document.getElementById("cameraPreview");
-  const video = document.getElementById("cameraFeed");
-  const status = document.getElementById("cameraStatus");
-  const scanResult = document.getElementById("scanResult");
-  const scanLink = document.getElementById("scanLink");
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
-  let stream;
-  let scanInterval;
-  let barcodeDetector;
+const startBtn = document.getElementById("startBtn");
+const stopBtn = document.getElementById("stopBtn");
+const restartBtn = document.getElementById("restartBtn");
+const fileInput = document.getElementById("fileInput");
+const resultEl = document.getElementById("result");
 
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d", { willReadFrequently: true });
+let stream = null;
+let scanning = false;
+let rafId = null;
 
-  if ("BarcodeDetector" in window) {
-    barcodeDetector = new window.BarcodeDetector({ formats: ["qr_code"] });
+async function startCamera() {
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+    video.srcObject = stream;
+    scanning = true;
+    resultEl.textContent = "Scanning...";
+    startBtn.disabled = true;
+    stopBtn.disabled = false;
+    restartBtn.disabled = true;
+    scanLoop();
+  } catch (err) {
+    alert("Error accessing camera: " + err.message);
   }
+}
 
-  function setScanResult(text) {
-    scanResult.hidden = false;
-    scanResult.textContent = "Scanned QR: " + text;
-
-    const trimmedText = text.trim();
-    if (!trimmedText) {
-      scanLink.hidden = true;
-      return;
-    }
-
-    const isWebLink = /^https?:\/\//i.test(trimmedText);
-    const isRelativePath = /^(\.\/|\.\.\/|\/).+/.test(trimmedText);
-    const looksLikeHtmlFile = /^[\w-]+\.html?(\?.*)?$/i.test(trimmedText);
-
-    if (isWebLink || isRelativePath || looksLikeHtmlFile) {
-      scanLink.href = trimmedText;
-      scanLink.hidden = false;
-    } else {
-      scanLink.hidden = true;
-    }
+function stopCamera() {
+  scanning = false;
+  if (rafId) {
+    cancelAnimationFrame(rafId);
+    rafId = null;
   }
+  if (stream) {
+    video.srcObject = null;
+    stream.getTracks().forEach(track => track.stop());
+    stream = null;
+  }
+  video.pause();
+  startBtn.disabled = false;
+  stopBtn.disabled = true;
+  restartBtn.disabled = false;
+}
 
-  async function detectQRCode() {
-    if (!stream || !video.videoWidth || !video.videoHeight || !context) {
-      return;
-    }
+function restartCamera() {
+  stopCamera();
+  startCamera();
+}
 
-    if (barcodeDetector) {
-      try {
-        const barcodes = await barcodeDetector.detect(video);
-        if (barcodes.length > 0 && barcodes[0].rawValue) {
-          setScanResult(barcodes[0].rawValue);
-          status.textContent = "QR code detected.";
-          stopCamera();
-        }
-      } catch (error) {
-        console.error("BarcodeDetector scan failed:", error);
-      }
-      return;
-    }
+function scanLoop() {
+  if (!scanning) return;
 
-    if (typeof window.jsQR !== "function") {
-      return;
-    }
-
+  if (video.readyState === video.HAVE_ENOUGH_DATA) {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
-    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-    const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-    const code = window.jsQR(imageData.data, imageData.width, imageData.height, {
-      inversionAttempts: "dontInvert"
-    });
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, imageData.width, imageData.height);
 
-    if (code && code.data) {
-      setScanResult(code.data);
-      status.textContent = "QR code detected.";
-      stopCamera();
-    }
-  }
+    if (code) {
+      resultEl.textContent = "QR Code: " + code.data;
+      resultEl.classList.add("flash");
 
-  function beginScanning() {
-    if (scanInterval) {
-      window.clearInterval(scanInterval);
-    }
+      stopCamera(); // auto stop after detection
 
-    scanInterval = window.setInterval(function () {
-      detectQRCode();
-    }, 250);
-  }
-
-  async function startCamera() {
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      status.textContent = "This browser cannot open the camera. Try Chrome or Safari on mobile.";
+      setTimeout(() => resultEl.classList.remove("flash"), 1000);
       return;
     }
-
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: { ideal: "environment" }
-        },
-        audio: false
-      });
-
-      video.srcObject = stream;
-      await video.play();
-      preview.hidden = false;
-      stopButton.hidden = false;
-      scanResult.hidden = true;
-      scanLink.hidden = true;
-      status.textContent = "Camera is live. Point it at a QR code.";
-      beginScanning();
-    } catch (error) {
-      status.textContent = "Camera access was blocked or unavailable. Allow camera permissions and try again.";
-      console.error("Unable to start camera:", error);
-    }
   }
+  rafId = requestAnimationFrame(scanLoop);
+}
 
-  function stopCamera() {
-    if (scanInterval) {
-      window.clearInterval(scanInterval);
-      scanInterval = null;
+function scanImageFile(file) {
+  const img = new Image();
+  img.onload = () => {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+    if (code) {
+      resultEl.textContent = "QR Code (from file): " + code.data;
+      resultEl.classList.add("flash");
+      setTimeout(() => resultEl.classList.remove("flash"), 1000);
+    } else {
+      resultEl.textContent = "No QR code found in image.";
     }
+  };
+  img.src = URL.createObjectURL(file);
+}
 
-    if (!stream) {
-      return;
-    }
-
-    stream.getTracks().forEach(function (track) {
-      track.stop();
-    });
-
-    stream = null;
-    video.srcObject = null;
-    preview.hidden = true;
-    stopButton.hidden = true;
-
-    if (scanResult.hidden) {
-      status.textContent = "Camera stopped.";
-    }
+startBtn.addEventListener("click", startCamera);
+stopBtn.addEventListener("click", stopCamera);
+restartBtn.addEventListener("click", restartCamera);
+fileInput.addEventListener("change", e => {
+  if (e.target.files.length > 0) {
+    scanImageFile(e.target.files[0]);
   }
-
-  openButton.addEventListener("click", startCamera);
-  stopButton.addEventListener("click", stopCamera);
-
-  window.addEventListener("beforeunload", stopCamera);
 });

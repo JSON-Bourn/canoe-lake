@@ -3,36 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Canoe Lake</title>
+  <title>Canoe Lake Camera View</title>
   <link rel="stylesheet" href="./css/styles.css">
-  <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" defer></script>
-  <script src="./scripts/camera-view.js" defer></script>
 </head>
-<body class="camera-view"> <!-- change to fragment for fragment files -->
+<body class="camera-view">
+  <header>
+    <nav class="nav-bar">
+      <ul class="nav-list">
+        <li><a href="./canoe-lake-camera-view.html">Investigate</a></li>
+        <li><a href="./">Solve</a></li>
+      </ul>
+    </nav>
+  </header>
 
-<div class="container">
-  <div class="title" id="title">CAMERA VIEW</div> 
+  <div class="container">
+    <div class="title">CAMERA VIEW</div>
 
-<!-- Button to open camera on mobile -->
-  <div class="camera-btn-container">
-    <button id="cameraBtn">OPEN CAMERA</button>
-    <button id="stopCameraBtn" hidden>STOP CAMERA</button>
+    <div class="camera-preview">
+      <video id="video" autoplay playsinline muted></video>
+    </div>
+    <canvas id="canvas" hidden></canvas>
+
+    <div class="camera-btn-container">
+      <button id="startBtn" class="begin-btn">OPEN CAMERA</button>
+      <button id="stopBtn" class="begin-btn" disabled>STOP CAMERA</button>
+      <button id="restartBtn" class="begin-btn" disabled>RESTART CAMERA</button>
+    </div>
+
+    <div class="instructions">
+      <p>Scan a Fragment With Your Camera.</p>
+    </div>
   </div>
 
-  <div class="camera-preview" id="cameraPreview" hidden>
-    <video id="cameraFeed" playsinline autoplay muted></video>
-  </div>
-
-  <p id="cameraStatus" class="camera-status" aria-live="polite">Tap OPEN CAMERA to scan a QR code.</p>
-  <p id="scanResult" class="camera-scan-result" hidden></p>
-  <a id="scanLink" class="begin-btn" hidden>OPEN SCANNED LINK</a>
-
-<!-- Instructions -->
-<div class="instructions" id="instructions">
-  <p>Scan a Fragment With Your Camera.</p>
-
-</div>
-</div>
-
+  <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+  <script src="./scripts/camera-view.js"></script>
 </body>
 </html>
