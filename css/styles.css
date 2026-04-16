@@ -12,7 +12,8 @@
 /* 5. Titles */
 /* 6. Images */
 /* 7. Buttons */
-/* 8. Media Queries */
+/* 8. jsQR Styles */
+/* 9. Media Queries */
 /**********************************/
 
 @font-face {
@@ -378,7 +379,54 @@ body.chapter #cardImage {
   border-color: #F1DD4280;
 }
 
-/* 8. Media Queries */
+
+/* 8. jsQR Styles */
+
+video, canvas {
+  max-width: 100%;
+  width: 400px;
+  height: auto;
+  margin: 10px 0;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+}
+
+#result {
+  margin-top: 20px;
+  padding: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: black;
+  background: #eee;
+  border-radius: 8px;
+}
+
+button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+button:disabled {
+  background: #999;
+  cursor: not-allowed;
+}
+
+.flash {
+  animation: flash-bg 0.8s ease;
+}
+
+@keyframes flash-bg {
+  0% { background: yellow; }
+  100% { background: #eee; }
+}
+
+/* 9. Media Queries */
 /* Styles for screens 600px wide or less (e.g., phones) */
 @media (max-width: 600px) {
 
