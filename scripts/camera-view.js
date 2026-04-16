@@ -11,13 +11,42 @@ const resultEl = document.getElementById("result");
 let stream = null;
 let scanning = false;
 let rafId = null;
+let barcodeDetector = null;
+
+if ("BarcodeDetector" in window) {
+  try {
+    barcodeDetector = new window.BarcodeDetector({ formats: ["qr_code"] });
+  } catch (error) {
+    barcodeDetector = null;
+  }
+}
+
+function setResult(text, flash = false) {
+  if (!resultEl) {
+    return;
+  }
+
+  resultEl.textContent = text;
+  if (flash) {
+    resultEl.classList.add("flash");
+    window.setTimeout(() => resultEl.classList.remove("flash"), 1000);
+  }
+}
 
 async function startCamera() {
   try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setResult("This browser does not support camera access.");
+      return;
+    }
+
     stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
     video.srcObject = stream;
+    await video.play();
+
     scanning = true;
-    resultEl.textContent = "Scanning...";
+    setResult("Scanning...");
+
     startBtn.disabled = true;
     stopBtn.disabled = false;
     restartBtn.disabled = true;
@@ -52,25 +81,49 @@ function restartCamera() {
 function scanLoop() {
   if (!scanning) return;
 
-  if (video.readyState === video.HAVE_ENOUGH_DATA) {
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  if (video.readyState >= video.HAVE_CURRENT_DATA && video.videoWidth > 0 && video.videoHeight > 0) {
+    if (barcodeDetector) {
+      barcodeDetector.detect(video).then((barcodes) => {
+        if (!scanning) {
+          return;
+        }
 
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const code = jsQR(imageData.data, imageData.width, imageData.height);
+        if (barcodes.length > 0 && barcodes[0].rawValue) {
+          setResult("QR Code: " + barcodes[0].rawValue, true);
+          stopCamera();
+          return;
+        }
 
-    if (code) {
-      resultEl.textContent = "QR Code: " + code.data;
-      resultEl.classList.add("flash");
-
-      stopCamera(); // auto stop after detection
-
-      setTimeout(() => resultEl.classList.remove("flash"), 1000);
+        scanWithJsQR();
+      }).catch(() => {
+        scanWithJsQR();
+      });
+      rafId = requestAnimationFrame(scanLoop);
       return;
     }
+
+    scanWithJsQR();
   }
+
   rafId = requestAnimationFrame(scanLoop);
+}
+
+function scanWithJsQR() {
+  if (typeof window.jsQR !== "function") {
+    return;
+  }
+
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const code = window.jsQR(imageData.data, imageData.width, imageData.height);
+
+  if (code && code.data) {
+    setResult("QR Code: " + code.data, true);
+    stopCamera();
+  }
 }
 
 function scanImageFile(file) {
@@ -81,24 +134,25 @@ function scanImageFile(file) {
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const code = jsQR(imageData.data, imageData.width, imageData.height);
+    const code = window.jsQR(imageData.data, imageData.width, imageData.height);
 
-    if (code) {
-      resultEl.textContent = "QR Code (from file): " + code.data;
-      resultEl.classList.add("flash");
-      setTimeout(() => resultEl.classList.remove("flash"), 1000);
+    if (code && code.data) {
+      setResult("QR Code (from file): " + code.data, true);
     } else {
-      resultEl.textContent = "No QR code found in image.";
+      setResult("No QR code found in image.");
     }
   };
+
   img.src = URL.createObjectURL(file);
 }
 
 startBtn.addEventListener("click", startCamera);
 stopBtn.addEventListener("click", stopCamera);
 restartBtn.addEventListener("click", restartCamera);
-fileInput.addEventListener("change", e => {
-  if (e.target.files.length > 0) {
-    scanImageFile(e.target.files[0]);
-  }
-});
+if (fileInput) {
+  fileInput.addEventListener("change", (e) => {
+    if (e.target.files.length > 0) {
+      scanImageFile(e.target.files[0]);
+    }
+  });
+}
