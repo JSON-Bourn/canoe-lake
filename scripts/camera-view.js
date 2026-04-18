@@ -1,13 +1,16 @@
 const video = document.getElementById("video");
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
 const restartBtn = document.getElementById("restartBtn");
 const fileInput = document.getElementById("fileInput");
 const resultEl = document.getElementById("result");
 const scanLink = document.getElementById("scanLink");
+
+// REQUIRED hidden container for html5-qrcode (DO NOT REMOVE)
+let qrContainer = document.createElement("div");
+qrContainer.id = "qr-reader";
+qrContainer.style.display = "none";
+document.body.appendChild(qrContainer);
 
 let html5QrCode = null;
 let scanning = false;
@@ -33,12 +36,10 @@ function updateScanLink(href = "") {
 
 function resolveUrl(text) {
   if (!text) return "";
-
   try {
     if (/^https?:\/\//i.test(text)) return text;
     if (/^www\./i.test(text)) return "https://" + text;
   } catch {}
-
   return "";
 }
 
@@ -54,8 +55,9 @@ function handleResult(decodedText) {
 
   if (url) {
     hasNavigated = true;
-    setResult("Redirecting...", true);
-    setTimeout(() => window.location.href = url, 400);
+    setTimeout(() => {
+      window.location.href = url;
+    }, 400);
   }
 }
 
@@ -65,9 +67,9 @@ async function startCamera() {
     return;
   }
 
-  html5QrCode = new Html5Qrcode("video"); // IMPORTANT: attach to your existing UI
-
   try {
+    html5QrCode = new Html5Qrcode("qr-reader");
+
     await html5QrCode.start(
       { facingMode: "environment" },
       {
@@ -77,22 +79,22 @@ async function startCamera() {
           return { width: size, height: size };
         }
       },
-      (decodedText) => handleResult(decodedText),
-      (err) => {
-        // keep silent (iOS produces noise here)
-      }
+      handleResult,
+      () => {}
     );
 
     scanning = true;
     hasNavigated = false;
 
     setResult("Scanning...");
+
     startBtn.disabled = true;
     stopBtn.disabled = false;
     restartBtn.disabled = true;
 
   } catch (e) {
     setResult("Camera error: " + e, true);
+    console.log(e);
   }
 }
 
@@ -102,7 +104,9 @@ async function stopCamera() {
   try {
     await html5QrCode.stop();
     await html5QrCode.clear();
-  } catch {}
+  } catch (e) {
+    console.log(e);
+  }
 
   scanning = false;
 
@@ -115,14 +119,14 @@ function restartCamera() {
   stopCamera().then(startCamera);
 }
 
-// image upload fallback
+// image scan fallback
 if (fileInput) {
   fileInput.addEventListener("change", async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     if (!html5QrCode) {
-      html5QrCode = new Html5Qrcode("video");
+      html5QrCode = new Html5Qrcode("qr-reader");
     }
 
     try {
