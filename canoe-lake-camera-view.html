@@ -3,46 +3,56 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QR Scanner</title>
-
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background: #111;
-      color: #fff;
-    }
-
-    #reader {
-      width: 100%;
-      max-width: 500px;
-      margin: 20px auto;
-    }
-
-    button {
-      padding: 12px 20px;
-      margin: 10px;
-      font-size: 16px;
-    }
-  </style>
+  <title>Canoe Lake Camera View</title>
+  <link rel="stylesheet" href="./css/styles.css">
 </head>
-<body>
 
-  <h2>QR Scanner</h2>
+<body class="camera-view">
 
-  <div id="reader"></div>
+  <header>
+    <nav class="nav-bar">
+      <ul class="nav-list">
+        <li><a href="./canoe-lake-camera-view.html">Investigate</a></li>
+        <li><a href="./">Solve</a></li>
+      </ul>
+    </nav>
+  </header>
 
-  <div>
-    <button id="startBtn">START CAMERA</button>
-    <button id="stopBtn" disabled>STOP CAMERA</button>
+  <div class="container">
+
+    <div class="title">CAMERA VIEW</div>
+
+    <!-- camera is now controlled by html5-qrcode -->
+    <div class="camera-preview">
+      <div id="reader"></div>
+    </div>
+
+    <div class="camera-btn-container">
+      <button id="startBtn" class="begin-btn">OPEN CAMERA</button>
+      <button id="stopBtn" class="begin-btn" disabled>STOP CAMERA</button>
+      <button id="restartBtn" class="begin-btn" disabled>RESTART CAMERA</button>
+    </div>
+
+    <div class="instructions">
+      <p>Scan a Fragment With Your Camera.</p>
+      <p>If live scan does not detect, use a photo of the QR code:</p>
+      <input id="fileInput" type="file" accept="image/*" capture="environment">
+    </div>
+
+    <p id="result" class="camera-scan-result" aria-live="polite">
+      Tap OPEN CAMERA to scan a QR code.
+    </p>
+
+    <a id="scanLink" class="begin-btn" href="#" hidden>
+      OPEN SCANNED PAGE
+    </a>
+
   </div>
 
-  <p id="result">Tap START CAMERA</p>
-
-  <!-- REQUIRED library -->
+  <!-- ✅ REQUIRED: QR library -->
   <script src="https://unpkg.com/html5-qrcode"></script>
 
-  <!-- Your script -->
+  <!-- your script -->
   <script src="./scripts/camera-view.js"></script>
 
 </body>
