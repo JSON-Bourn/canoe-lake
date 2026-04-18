@@ -1,6 +1,6 @@
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d", { willReadFrequently: true });
+const ctx = canvas.getContext("2d");
 const overlay = document.getElementById("overlay");
 const overlayCtx = overlay ? overlay.getContext("2d") : null;
 
@@ -15,10 +15,6 @@ let stream = null;
 let scanning = false;
 let rafId = null;
 let barcodeDetector = null;
-let lastScanAt = 0;
-
-const SCAN_INTERVAL_MS = 180;
-const MAX_SCAN_DIMENSION = 960;
 
 if ("BarcodeDetector" in window) {
   try {
@@ -72,56 +68,6 @@ function syncOverlaySize() {
   overlay.height = video.videoHeight;
 }
 
-function getScaledScanSize(width, height) {
-  const largestDimension = Math.max(width, height);
-
-  if (!largestDimension || largestDimension <= MAX_SCAN_DIMENSION) {
-    return { width, height, scaleX: 1, scaleY: 1 };
-  }
-
-  const ratio = MAX_SCAN_DIMENSION / largestDimension;
-
-  return {
-    width: Math.round(width * ratio),
-    height: Math.round(height * ratio),
-    scaleX: width / Math.round(width * ratio),
-    scaleY: height / Math.round(height * ratio),
-  };
-}
-
-function scaleLocation(location, scaleX, scaleY) {
-  if (!location) {
-    return null;
-  }
-
-  const scalePoint = (point) => {
-    if (!point) {
-      return null;
-    }
-
-    return {
-      x: point.x * scaleX,
-      y: point.y * scaleY,
-    };
-  };
-
-  return {
-    topLeftCorner: scalePoint(location.topLeftCorner),
-    topRightCorner: scalePoint(location.topRightCorner),
-    bottomRightCorner: scalePoint(location.bottomRightCorner),
-    bottomLeftCorner: scalePoint(location.bottomLeftCorner),
-  };
-}
-
-function isLikelyNavigableTarget(value) {
-  if (typeof value !== "string") {
-    return false;
-  }
-
-  const trimmedValue = value.trim();
-  return /^(https?:|\.\/|\.\.\/|\/|[^\s?#]+\.html(?:[?#].*)?)$/i.test(trimmedValue);
-}
-
 function drawDetectionOutline(location) {
   if (!overlayCtx || !overlay || !location) {
     return;
@@ -165,10 +111,6 @@ function normalizeScanValue(value) {
     return { text: "", href: "" };
   }
 
-  if (!isLikelyNavigableTarget(trimmedValue)) {
-    return { text: trimmedValue, href: "" };
-  }
-
   try {
     return {
       text: trimmedValue,
@@ -186,46 +128,14 @@ async function startCamera() {
       return;
     }
 
-    stream = await navigator.mediaDevices.getUserMedia({
-      audio: false,
-      video: {
-        facingMode: { ideal: "environment" },
-        width: { ideal: 1280 },
-        height: { ideal: 720 },
-      },
-    });
+    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
     video.srcObject = stream;
-    video.setAttribute("playsinline", "true");
-    video.muted = true;
     await video.play();
 
-    const [track] = stream.getVideoTracks();
-    if (track) {
-      const capabilities = typeof track.getCapabilities === "function" ? track.getCapabilities() : null;
-      const advanced = [];
-
-      if (capabilities?.focusMode && capabilities.focusMode.includes("continuous")) {
-        advanced.push({ focusMode: "continuous" });
-      }
-
-      if (capabilities?.zoom && typeof capabilities.zoom.max === "number" && capabilities.zoom.max >= 1.5) {
-        advanced.push({ zoom: Math.min(2, capabilities.zoom.max) });
-      }
-
-      if (advanced.length > 0) {
-        try {
-          await track.applyConstraints({ advanced });
-        } catch (error) {
-          // Ignore unsupported mobile camera constraint combinations.
-        }
-      }
-    }
-
     scanning = true;
-    lastScanAt = 0;
     updateScanLink();
     clearOverlay();
-    setResult("Scanning... Hold the QR code steady inside the frame.");
+    setResult("Scanning...");
 
     startBtn.disabled = true;
     stopBtn.disabled = false;
@@ -236,15 +146,13 @@ async function startCamera() {
   }
 }
 
-function stopCamera({ clearHighlight = true } = {}) {
+function stopCamera() {
   scanning = false;
   if (rafId) {
     cancelAnimationFrame(rafId);
     rafId = null;
   }
-  if (clearHighlight) {
-    clearOverlay();
-  }
+  clearOverlay();
   if (stream) {
     video.srcObject = null;
     stream.getTracks().forEach(track => track.stop());
@@ -269,9 +177,9 @@ function handleResult(value, location = null) {
   }
 
   drawDetectionOutline(location);
-  setResult("QR code found: " + normalized.text, true);
+  setResult("QR Code found: " + normalized.text, true);
   updateScanLink(normalized.href);
-  stopCamera({ clearHighlight: false });
+  stopCamera();
 
   if (normalized.href) {
     window.setTimeout(() => {
@@ -282,13 +190,6 @@ function handleResult(value, location = null) {
 
 function scanLoop() {
   if (!scanning) return;
-
-  const now = performance.now();
-  if (now - lastScanAt < SCAN_INTERVAL_MS) {
-    rafId = requestAnimationFrame(scanLoop);
-    return;
-  }
-  lastScanAt = now;
 
   if (video.readyState >= video.HAVE_CURRENT_DATA && video.videoWidth > 0 && video.videoHeight > 0) {
     if (barcodeDetector) {
@@ -327,10 +228,8 @@ function scanWithJsQR() {
     return;
   }
 
-  const scanSize = getScaledScanSize(video.videoWidth, video.videoHeight);
-
-  canvas.width = scanSize.width;
-  canvas.height = scanSize.height;
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
   syncOverlaySize();
   clearOverlay();
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -341,34 +240,24 @@ function scanWithJsQR() {
   });
 
   if (code && code.data) {
-    handleResult(code.data, scaleLocation(code.location, scanSize.scaleX, scanSize.scaleY));
+    handleResult(code.data, code.location);
   }
 }
 
 function scanImageFile(file) {
   const img = new Image();
   img.onload = () => {
-    const scanSize = getScaledScanSize(img.width, img.height);
-
-    canvas.width = scanSize.width;
-    canvas.height = scanSize.height;
+    canvas.width = img.width;
+    canvas.height = img.height;
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const code = window.jsQR(imageData.data, imageData.width, imageData.height, {
-      inversionAttempts: "attemptBoth",
-    });
+    const code = window.jsQR(imageData.data, imageData.width, imageData.height);
 
     if (code && code.data) {
-      const normalized = normalizeScanValue(code.data);
-      setResult("QR code found in photo: " + normalized.text, true);
-      updateScanLink(normalized.href);
-      if (normalized.href) {
-        window.location.href = normalized.href;
-      }
+      setResult("QR Code (from file): " + code.data, true);
     } else {
       setResult("No QR code found in image.");
-      updateScanLink();
     }
   };
 
