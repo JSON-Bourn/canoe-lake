@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const f1InitX = f1InitPos.x;
   const f1InitY = f1InitPos.y;
 
-  // Set required offsets for liveSnap
+  // Set defatul offsets for liveSnap
   // -- Y offset by row
   var row1OffsetY = -120;
   var row2OffsetY = -230;
@@ -37,6 +37,32 @@ document.addEventListener("DOMContentLoaded", function() {
     snap3: 0
   }
   var colOffset = [col1OffsetX, col2OffsetX, col3OffsetX];
+
+  // Query window size to update offsets for mobile
+  if (window.innerWidth <= 600) {
+  var row1OffsetY = -80;
+  var row2OffsetY = -144;
+  var row3OffsetY = -208;
+  var rowOffset = [row1OffsetY, row2OffsetY, row3OffsetY]
+  
+  // -- X offset by column
+  var col1OffsetX = {
+    snap1: 0,
+    snap2: 64,
+    snap3: 128
+  }
+  var col2OffsetX = {
+    snap1: -64,
+    snap2: 0,
+    snap3: 64
+  }
+  var col3OffsetX = {
+    snap1: -128,
+    snap2: -64,
+    snap3: 0
+  }
+  var colOffset = [col1OffsetX, col2OffsetX, col3OffsetX];
+  }
 
   // ******* LOGIC FOR CARDS ********
   /**
