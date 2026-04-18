@@ -97,7 +97,7 @@ body {
   background-color: var(--main-bg);
   display: flex;
   flex-flow: column wrap;
-  justify-content: center;
+  justify-content: start;
   align-items: center;
   height: 100vh;
   /* overflow: hidden; */
