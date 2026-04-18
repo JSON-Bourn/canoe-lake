@@ -78,27 +78,36 @@ function restartCamera() {
   startCamera();
 }
 
+function handleResult(value) {
+  stopCamera();
+  try {
+    const url = new URL(value);
+    window.location.href = url.href;
+  } catch {
+    setResult(value, true);
+  }
+}
+
 function scanLoop() {
   if (!scanning) return;
 
   if (video.readyState >= video.HAVE_CURRENT_DATA && video.videoWidth > 0 && video.videoHeight > 0) {
     if (barcodeDetector) {
       barcodeDetector.detect(video).then((barcodes) => {
-        if (!scanning) {
-          return;
-        }
+        if (!scanning) return;
 
         if (barcodes.length > 0 && barcodes[0].rawValue) {
-          setResult("QR Code: " + barcodes[0].rawValue, true);
-          stopCamera();
+          handleResult(barcodes[0].rawValue);
           return;
         }
 
         scanWithJsQR();
+        rafId = requestAnimationFrame(scanLoop);
       }).catch(() => {
+        if (!scanning) return;
         scanWithJsQR();
+        rafId = requestAnimationFrame(scanLoop);
       });
-      rafId = requestAnimationFrame(scanLoop);
       return;
     }
 
@@ -121,8 +130,7 @@ function scanWithJsQR() {
   const code = window.jsQR(imageData.data, imageData.width, imageData.height);
 
   if (code && code.data) {
-    setResult("QR Code: " + code.data, true);
-    stopCamera();
+    handleResult(code.data);
   }
 }
 
