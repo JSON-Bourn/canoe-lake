@@ -1,3 +1,5 @@
+console.log("camera-view.js loaded");
+
 const video = document.getElementById("video");
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
