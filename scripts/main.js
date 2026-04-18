@@ -8,232 +8,93 @@
 document.addEventListener("DOMContentLoaded", function() { 
 
   //Get initial x,y of all cards.
-  const f1 = document.getElementById("f1")
-  const cardStart = f1.getBoundingClientRect();
-  const cardStartX = cardStart.x;
-  const cardStartY = cardStart.y;
+  const f1Elem = document.getElementById("f1")
+  const f1InitPos = f1Elem.getBoundingClientRect();
+  const f1InitX = f1InitPos.x;
+  const f1InitY = f1InitPos.y;
 
-  // ******* DRAGGING LOGIC FOR CARDS ********
+  // Set required offsets for liveSnap
+  // -- Y offset by row
+  var row1OffsetY = -120;
+  var row2OffsetY = -230;
+  var row3OffsetY = -340;
+  var rowOffset = [row1OffsetY, row2OffsetY, row3OffsetY]
+  
+  // -- X offset by column
+  var col1OffsetX = {
+    snap1: 0,
+    snap2: 110,
+    snap3: 220
+  }
+  var col2OffsetX = {
+    snap1: -110,
+    snap2: 0,
+    snap3: 110
+  }
+  var col3OffsetX = {
+    snap1: -220,
+    snap2: -110,
+    snap3: 0
+  }
+  var colOffset = [col1OffsetX, col2OffsetX, col3OffsetX];
 
-  Draggable.create('#f1', 
-  {
-    type: 'x,y',
-    bounds: $('html'),
-    inertia: true,
-    liveSnap:
-    {
-		//snaps to the closest point in the array, but only when it's within 15px (new in GSAP 1.20.0 release):
-		points: [
-			{ x: 0, y: 0 },
-			{ x: 0, y: -120 },
-			{ x: 110, y: -120 },
-			{ x: 220, y: -120 }
-		],
-		radius: 20
-	  },
-    onClick: function () {
-    console.log('clicked');
-    },
-    onDragEnd: function () {
-    console.log('drag ended');
-    update();
+  // ******* LOGIC FOR CARDS ********
+  /**
+   * Card class represents the draggable card elements on the solve page.
+   * 
+   */
+  class Card {
+    /**
+     * 
+     * @param {string} id - the html id of the element.
+     * @param {integer} row - the row that the card started in the 9x9 grid.
+     * @param {integer} col - the column that the card started in the 9x9 grid.
+     */
+    constructor(id, row, col) {
+      this.id = id;
+      // Depending on which row / col the card is in, set liveSnap grid differently.
+      this.row = row;
+      this.col = col;
+      this.draggable = Draggable.create(id, 
+      {
+        type: 'x,y',
+        bounds: $('html'),
+        inertia: true,
+        liveSnap:
+        {
+        //snaps to the closest point in the array, but only when it's within 15px (new in GSAP 1.20.0 release):
+        points: [
+          { x: 0, y: 0 },
+          { x: colOffset[col].snap1, y: rowOffset[row] },
+          { x: colOffset[col].snap2, y: rowOffset[row] },
+          { x: colOffset[col].snap3, y: rowOffset[row] }
+        ],
+        radius: 20
+        },
+        onClick: function () {
+        console.log('clicked');
+        },
+        onDragEnd: function () {
+        console.log('drag ended');
+        update();
+        }
+      });
     }
-  });
+  }
 
-  Draggable.create('#f2', 
-  {
-    type: 'x,y',
-    bounds: $('html'),
-    inertia: true,
-    liveSnap:
-    {
-		points: [
-			{ x: 0, y: 0 },
-			{ x: -110, y: -120 },
-			{ x: 0, y: -120 },
-			{ x: 110, y: -120 }
-		],
-		radius: 20
-	  },
-    onClick: function () {
-    console.log('clicked');
-    },
-    onDragEnd: function () {
-    console.log('drag ended');
-    update();
-    }
-  });
-
-  Draggable.create('#f3', 
-  {
-    type: 'x,y',
-    bounds: $('html'),
-    inertia: true,
-    liveSnap:
-    {
-		points: [
-			{ x: 0, y: 0 },
-			{ x: -220, y: -120 },
-			{ x: -110, y: -120 },
-			{ x: 0, y: -120 }
-		],
-		radius: 20
-	  },
-    onClick: function () {
-    console.log('clicked');
-    },
-    onDragEnd: function () {
-    console.log('drag ended');
-    update();
-    }
-  });
-
-  Draggable.create('#f4', 
-  {
-    type: 'x,y',
-    bounds: $('html'),
-    inertia: true,
-    liveSnap:
-    {
-		points: [
-			{ x: 0, y: 0 },
-			{ x: 0, y: -230 },
-			{ x: 110, y: -230 },
-			{ x: 220, y: -230 }
-		],
-		radius: 20
-	  },
-    onClick: function () {
-    console.log('clicked');
-    },
-    onDragEnd: function () {
-    console.log('drag ended');
-    update();
-    }
-  });
-
-  Draggable.create('#f5', 
-  {
-    type: 'x,y',
-    bounds: $('html'),
-    inertia: true,
-    liveSnap:
-    {
-		points: [
-			{ x: 0, y: 0 },
-			{ x: -110, y: -230 },
-			{ x: 0, y: -230 },
-			{ x: 110, y: -230 }
-		],
-		radius: 20
-	  },
-    onClick: function () {
-    console.log('clicked');
-    },
-    onDragEnd: function () {
-    console.log('drag ended');
-    update();
-    }
-  });
-
-  Draggable.create('#f6', 
-  {
-    type: 'x,y',
-    bounds: $('html'),
-    inertia: true,
-    liveSnap:
-    {
-		points: [
-			{ x: 0, y: 0 },
-			{ x: -220, y: -230 },
-			{ x: -110, y: -230 },
-			{ x: 0, y: -230 }
-		],
-		radius: 20
-	  },
-    onClick: function () {
-    console.log('clicked');
-    },
-    onDragEnd: function () {
-    console.log('drag ended');
-    update();
-    }
-  });
-
-  Draggable.create('#f7', 
-  {
-    type: 'x,y',
-    bounds: $('html'),
-    inertia: true,
-    liveSnap:
-    {
-		points: [
-			{ x: 0, y: 0 },
-			{ x: 0, y: -340 },
-			{ x: 110, y: -340 },
-			{ x: 220, y: -340 }
-		],
-		radius: 20
-	  },
-    onClick: function () {
-    console.log('clicked');
-    },
-    onDragEnd: function () {
-    console.log('drag ended');
-    update();
-    }
-  });
-
-  Draggable.create('#f8', 
-  {
-    type: 'x,y',
-    bounds: $('html'),
-    inertia: true,
-    liveSnap:
-    {
-		points: [
-			{ x: 0, y: 0 },
-			{ x: -110, y: -340 },
-			{ x: 0, y: -340 },
-			{ x: 110, y: -340 }
-		],
-		radius: 20
-	  },
-    onClick: function () {
-    console.log('clicked');
-    },
-    onDragEnd: function () {
-    console.log('drag ended');
-    update();
-    }
-  });
-
-  Draggable.create('#f9', 
-  {
-    type: 'x,y',
-    bounds: $('html'),
-    inertia: true,
-    liveSnap:
-    {
-		points: [
-			{ x: 0, y: 0 },
-			{ x: -220, y: -340 },
-			{ x: -110, y: -340 },
-			{ x: 0, y: -340 }
-		],
-		radius: 20
-	  },
-    onClick: function () {
-    console.log('clicked');
-    },
-    onDragEnd: function () {
-    console.log('drag ended');
-    update();
-    }
-  });
+  // Constructors for 9 cards:
+  const f1 = new Card("#f1", 0, 0);
+  const f2 = new Card("#f2", 0, 1);
+  const f3 = new Card("#f3", 0, 2);
+  const f4 = new Card("#f4", 1, 0);
+  const f5 = new Card("#f5", 1, 1);
+  const f6 = new Card("#f6", 1, 2);
+  const f7 = new Card("#f7", 2, 0);
+  const f8 = new Card("#f8", 2, 1);
+  const f9 = new Card("#f9", 2, 2);
 
   // ******** UPDATE ON DRAG RELEASE ********
-  
+
   //https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
   function update() {
   console.log("Running update")
@@ -248,13 +109,13 @@ document.addEventListener("DOMContentLoaded", function() {
   console.log("Y coord of snapped card: " + cardY);
   
   //the HTML element of the targeted snap grid:
-  const snapTarget1 = document.getElementById('g1');
+  const snapTarget1 = document.getElementById('s1');
   const rect1 = snapTarget1.getBoundingClientRect();
   
-  const snapTarget2 = document.getElementById('g2');
+  const snapTarget2 = document.getElementById('s2');
   const rect2 = snapTarget2.getBoundingClientRect();
   
-  const snapTarget3 = document.getElementById('g3');
+  const snapTarget3 = document.getElementById('s3');
   const rect3 = snapTarget3.getBoundingClientRect();
   
   // Coords of the snap grid target:
@@ -284,20 +145,16 @@ document.addEventListener("DOMContentLoaded", function() {
       rect3X == cardX && rect2Y == cardY) 
   {
     console.log("snapped to a target!");
-  }
 
-  //Create Offset from Initial
-  let cardOffsetX = cardX - cardStartX;
-  let cardOffsetY = cardStartY - cardY;
-  console.log(cardOffsetX);
-  console.log(cardOffsetY);
+
+  }
 
   } // *********** END OF UPDATE FUNCTION ***********
 
   // Create a function that spreads out the positions of all 9 cards
   function spreadCards() {
     let cards = document.querySelectorAll(".draggable");
-    let cardStart = document.querySelector(".card-start");
+    // let cardStart = document.querySelector(".card-start");
     // cardStart.style.grid = "1fr 1fr 1fr / 1fr 1fr 1fr";
     console.log(cards);
     // for(let i=0; i < 9; i++){
