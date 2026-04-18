@@ -79,6 +79,7 @@ document.addEventListener("DOMContentLoaded", function() {
      */
     constructor(id, row, col) {
       this.id = id;
+      this.elem = $("#" + id);
       // Depending on which row / col the card is in, set liveSnap grid differently.
       this.row = row;
       this.col = col;
@@ -123,6 +124,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const f7 = new Card("f7", 2, 0);
   const f8 = new Card("f8", 2, 1);
   const f9 = new Card("f9", 2, 2);
+  var cardArray = [f1, f2, f3, f4, f5, f6, f7, f8, f9];
 
 
   // ******** UPDATE ON DRAG RELEASE FUNCTION ********
@@ -176,7 +178,7 @@ document.addEventListener("DOMContentLoaded", function() {
   //Check if card is snapped in a snap box:
   if (rect1X == cardX && rect1Y == cardY ||
       rect2X == cardX && rect2Y == cardY ||
-      rect3X == cardX && rect2Y == cardY) 
+      rect3X == cardX && rect3Y == cardY) 
   {
     console.log("snapped to a target!");
 
@@ -189,14 +191,21 @@ document.addEventListener("DOMContentLoaded", function() {
   } // *********** END OF UPDATE FUNCTION ***********
 
   // Create a function that spreads out the positions of all 9 cards
-  function spreadCards() {
-    let cards = document.querySelectorAll(".draggable");
-    console.log(cards);
-    // cards[0].setAttribute("transform", "translate(100px);");
+  function resetCards() {
+    cardArray.forEach( (card, i) => {
+      console.log(card.id);
+      // Reset card position
+      gsap.set(card.draggable[0].target, { clearProps: "x,y" });
+      // Remove selected class
+      // $("#" + card.id).removeClass("card-selected")
+      card.elem.removeClass("card-selected")
+      console.log(card);
+    });
   }
 
-  document.querySelector(".spread").addEventListener("click", () => {
-    spreadCards();
+  document.querySelector(".reset").addEventListener("click", () => {
+    console.log("button pressed");
+    resetCards();
   });
 
 }); // END DOM Loaded Function
