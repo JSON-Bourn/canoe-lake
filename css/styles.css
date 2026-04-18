@@ -164,10 +164,18 @@ body {
 /* 3. Fragment vs Chapter styling */
 body.fragment {
   background-color: var(--fragment-bg);
+  height: auto;
+  min-height: 100vh;
+  overflow-y: auto;
+  justify-content: flex-start;
 }
 
 body.chapter {
   background-color: var(--main-bg);
+  height: auto;
+  min-height: 100vh;
+  overflow-y: auto;
+  justify-content: flex-start;
 }
 
 body.credits {
