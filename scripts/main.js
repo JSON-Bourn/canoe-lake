@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function() {
       // Depending on which row / col the card is in, set liveSnap grid differently.
       this.row = row;
       this.col = col;
-      this.draggable = Draggable.create(id, 
+      this.draggable = Draggable.create("#" + id, 
       {
         type: 'x,y',
         bounds: $('html'),
@@ -107,33 +107,33 @@ document.addEventListener("DOMContentLoaded", function() {
         onDragEnd: function () {
         console.log('drag ended');
           // $(id).classList.remove("card-selected");
-        update();
+        update(id);
         }
       });
     }
   }
 
   // Constructors for 9 cards:
-  const f1 = new Card("#f1", 0, 0);
-  const f2 = new Card("#f2", 0, 1);
-  const f3 = new Card("#f3", 0, 2);
-  const f4 = new Card("#f4", 1, 0);
-  const f5 = new Card("#f5", 1, 1);
-  const f6 = new Card("#f6", 1, 2);
-  const f7 = new Card("#f7", 2, 0);
-  const f8 = new Card("#f8", 2, 1);
-  const f9 = new Card("#f9", 2, 2);
+  const f1 = new Card("f1", 0, 0);
+  const f2 = new Card("f2", 0, 1);
+  const f3 = new Card("f3", 0, 2);
+  const f4 = new Card("f4", 1, 0);
+  const f5 = new Card("f5", 1, 1);
+  const f6 = new Card("f6", 1, 2);
+  const f7 = new Card("f7", 2, 0);
+  const f8 = new Card("f8", 2, 1);
+  const f9 = new Card("f9", 2, 2);
 
 
   // ******** UPDATE ON DRAG RELEASE FUNCTION ********
   /**
    * Update() is intended to run on every Drag End of a Card
-   * Takes no arguments, but checks for position of cards and target.
+   * @param {string} id - the id of the card element being updated.
    */
-  function update() {
+  function update(id) {
   console.log("Running update")
   //the HTML element of the snap card:
-  const snapCard = f1
+  const snapCard = document.getElementById(id);
   const card = snapCard.getBoundingClientRect();
   
   //Print coords of the snap card:
@@ -180,8 +180,11 @@ document.addEventListener("DOMContentLoaded", function() {
   {
     console.log("snapped to a target!");
 
-
+    snapCard.classList.add("card-selected");
   }
+  else (
+    snapCard.classList.remove("card-selected")
+  )
 
   } // *********** END OF UPDATE FUNCTION ***********
 
@@ -189,7 +192,7 @@ document.addEventListener("DOMContentLoaded", function() {
   function spreadCards() {
     let cards = document.querySelectorAll(".draggable");
     console.log(cards);
-    cards[0].setAttribute("transform", "translate(100px);");
+    // cards[0].setAttribute("transform", "translate(100px);");
   }
 
   document.querySelector(".spread").addEventListener("click", () => {
