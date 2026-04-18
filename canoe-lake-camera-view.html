@@ -22,7 +22,6 @@
 
     <div class="title">CAMERA VIEW</div>
 
-    <!-- camera is now controlled by html5-qrcode -->
     <div class="camera-preview">
       <div id="reader"></div>
     </div>
@@ -49,10 +48,15 @@
 
   </div>
 
-  <!-- REQUIRED: QR library -->
-  <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.10/minified/html5-qrcode.min.js"></script>
-
-  <!-- your script -->
+  <!-- QR library -->
+  <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+  <script>
+    if (typeof window.jsQR !== "function") {
+      const fallbackScript = document.createElement("script");
+      fallbackScript.src = "https://unpkg.com/jsqr/dist/jsQR.js";
+      document.head.appendChild(fallbackScript);
+    }
+  </script>
   <script src="./scripts/camera-view.js"></script>
 
 </body>
