@@ -30,7 +30,7 @@
   --container-yellow: #F1DD4244;
   --section-yellow: #F1DD4233;
   --card-bg: #444;
-  --solve-grid-bg: #999;
+  --solve-grid-bg: #666;
   --solve-grid-color: #999;
 }
 
@@ -150,6 +150,10 @@ body {
   width: 100px;
   height: 100px;
   background-color: var(--card-bg);
+}
+
+.card-selected {
+  box-shadow: 0 0 15px 5px var(--highlight-yellow-hover);
 }
 
 .instructions {
@@ -457,7 +461,7 @@ button:disabled {
 
 .fragment-grid {
   display: grid;
-  grid: 60px / 60px 60px 60px;
+  grid: 80px / 80px 80px 80px;
   background-color: var(--solve-grid-bg);
   padding: 10px;
   font-size: 20px;
@@ -482,8 +486,8 @@ button:disabled {
   display:flex;
   justify-content: center;
   align-items: center;
-  width: 60px;
-  height:60px;
+  width: 80px;
+  height:80px;
   background-color: var(--card-bg);
 }
 

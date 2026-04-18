@@ -8,8 +8,9 @@
 document.addEventListener("DOMContentLoaded", function() { 
 
   //Get initial x,y of all cards.
-  const f1Elem = document.getElementById("f1")
+  const f1Elem = document.getElementById("f1"); 
   const f1InitPos = f1Elem.getBoundingClientRect();
+  //https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
   const f1InitX = f1InitPos.x;
   const f1InitY = f1InitPos.y;
 
@@ -40,25 +41,25 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // Query window size to update offsets for mobile
   if (window.innerWidth <= 600) {
-  var row1OffsetY = -80;
-  var row2OffsetY = -144;
-  var row3OffsetY = -208;
+  var row1OffsetY = -100;
+  var row2OffsetY = -184;
+  var row3OffsetY = -268;
   var rowOffset = [row1OffsetY, row2OffsetY, row3OffsetY]
   
   // -- X offset by column
   var col1OffsetX = {
     snap1: 0,
-    snap2: 64,
-    snap3: 128
+    snap2: 84,
+    snap3: 168
   }
   var col2OffsetX = {
-    snap1: -64,
+    snap1: -84,
     snap2: 0,
-    snap3: 64
+    snap3: 84
   }
   var col3OffsetX = {
-    snap1: -128,
-    snap2: -64,
+    snap1: -168,
+    snap2: -84,
     snap3: 0
   }
   var colOffset = [col1OffsetX, col2OffsetX, col3OffsetX];
@@ -100,8 +101,12 @@ document.addEventListener("DOMContentLoaded", function() {
         onClick: function () {
         console.log('clicked');
         },
+        onDragStart: function () {
+          // $(id).classList.add("card-selected");
+        },
         onDragEnd: function () {
         console.log('drag ended');
+          // $(id).classList.remove("card-selected");
         update();
         }
       });
@@ -119,13 +124,16 @@ document.addEventListener("DOMContentLoaded", function() {
   const f8 = new Card("#f8", 2, 1);
   const f9 = new Card("#f9", 2, 2);
 
-  // ******** UPDATE ON DRAG RELEASE ********
 
-  //https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
+  // ******** UPDATE ON DRAG RELEASE FUNCTION ********
+  /**
+   * Update() is intended to run on every Drag End of a Card
+   * Takes no arguments, but checks for position of cards and target.
+   */
   function update() {
   console.log("Running update")
   //the HTML element of the snap card:
-  const snapCard = document.getElementById('f9');
+  const snapCard = f1
   const card = snapCard.getBoundingClientRect();
   
   //Print coords of the snap card:
@@ -180,16 +188,7 @@ document.addEventListener("DOMContentLoaded", function() {
   // Create a function that spreads out the positions of all 9 cards
   function spreadCards() {
     let cards = document.querySelectorAll(".draggable");
-    // let cardStart = document.querySelector(".card-start");
-    // cardStart.style.grid = "1fr 1fr 1fr / 1fr 1fr 1fr";
     console.log(cards);
-    // for(let i=0; i < 9; i++){
-    //   // cards[i].offsetLeft += i * 100;
-    //   cardStart.style.display = "block";
-    //   cards[i].style.display = "block";
-    //   cards[i].classList.remove("stacked");
-    //   cards[i].style.setProperty("transform", `translate3d(0px, ${i * 100}px, 0px)`);
-    // }
     cards[0].setAttribute("transform", "translate(100px);");
   }
 
