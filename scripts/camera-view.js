@@ -17,9 +17,10 @@ let rafId = null;
 let barcodeDetector = null;
 let hasNavigated = false;
 let lastJsQrAttemptAt = 0;
+let hasWarnedAboutJsQrLoad = false;
 
-const JSQR_INTERVAL_MS = 140;
-const MAX_SCAN_DIMENSION = 960;
+const JSQR_INTERVAL_MS = 180;
+const MAX_SCAN_DIMENSION = 640;
 
 if ("BarcodeDetector" in window) {
   try {
@@ -181,6 +182,10 @@ async function startCamera() {
         video: { facingMode: "environment" },
       });
     }
+
+    video.setAttribute("playsinline", "true");
+    video.setAttribute("webkit-playsinline", "true");
+    video.muted = true;
     video.srcObject = stream;
     await video.play();
 
@@ -285,9 +290,13 @@ function scanLoop() {
 
 function scanWithJsQR() {
   if (typeof window.jsQR !== "function") {
-    setResult("Loading QR scanner library...");
+    if (!hasWarnedAboutJsQrLoad) {
+      setResult("Loading QR scanner library...");
+      hasWarnedAboutJsQrLoad = true;
+    }
     return;
   }
+  hasWarnedAboutJsQrLoad = false;
 
   const now = performance.now();
   if (now - lastJsQrAttemptAt < JSQR_INTERVAL_MS) {
@@ -313,6 +322,23 @@ function scanWithJsQR() {
 
   if (code && code.data) {
     handleResult(code.data, code.location);
+    return;
+  }
+
+  const cropWidth = Math.floor(canvas.width * 0.7);
+  const cropHeight = Math.floor(canvas.height * 0.7);
+  const cropX = Math.floor((canvas.width - cropWidth) / 2);
+  const cropY = Math.floor((canvas.height - cropHeight) / 2);
+
+  if (cropWidth > 0 && cropHeight > 0) {
+    const croppedImageData = ctx.getImageData(cropX, cropY, cropWidth, cropHeight);
+    const croppedCode = window.jsQR(croppedImageData.data, croppedImageData.width, croppedImageData.height, {
+      inversionAttempts: "attemptBoth",
+    });
+
+    if (croppedCode && croppedCode.data) {
+      handleResult(croppedCode.data, null);
+    }
   }
 }
 
