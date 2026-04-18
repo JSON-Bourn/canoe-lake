@@ -13,7 +13,10 @@ document.addEventListener("DOMContentLoaded", function() {
   const cardStartX = cardStart.x;
   const cardStartY = cardStart.y;
 
-  Draggable.create('.draggable', {
+  // ******* DRAGGING LOGIC FOR CARDS ********
+
+  Draggable.create('#f1', 
+  {
     type: 'x,y',
     bounds: $('html'),
     inertia: true,
@@ -22,9 +25,9 @@ document.addEventListener("DOMContentLoaded", function() {
 		//snaps to the closest point in the array, but only when it's within 15px (new in GSAP 1.20.0 release):
 		points: [
 			{ x: 0, y: 0 },
-			{ x: 10, y: -110 },
-			{ x: 115, y: -110 },
-			{ x: 220, y: -110 }
+			{ x: 0, y: -120 },
+			{ x: 110, y: -120 },
+			{ x: 220, y: -120 }
 		],
 		radius: 20
 	  },
@@ -37,7 +40,200 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 
-  //Testing function
+  Draggable.create('#f2', 
+  {
+    type: 'x,y',
+    bounds: $('html'),
+    inertia: true,
+    liveSnap:
+    {
+		points: [
+			{ x: 0, y: 0 },
+			{ x: -110, y: -120 },
+			{ x: 0, y: -120 },
+			{ x: 110, y: -120 }
+		],
+		radius: 20
+	  },
+    onClick: function () {
+    console.log('clicked');
+    },
+    onDragEnd: function () {
+    console.log('drag ended');
+    update();
+    }
+  });
+
+  Draggable.create('#f3', 
+  {
+    type: 'x,y',
+    bounds: $('html'),
+    inertia: true,
+    liveSnap:
+    {
+		points: [
+			{ x: 0, y: 0 },
+			{ x: -220, y: -120 },
+			{ x: -110, y: -120 },
+			{ x: 0, y: -120 }
+		],
+		radius: 20
+	  },
+    onClick: function () {
+    console.log('clicked');
+    },
+    onDragEnd: function () {
+    console.log('drag ended');
+    update();
+    }
+  });
+
+  Draggable.create('#f4', 
+  {
+    type: 'x,y',
+    bounds: $('html'),
+    inertia: true,
+    liveSnap:
+    {
+		points: [
+			{ x: 0, y: 0 },
+			{ x: 0, y: -230 },
+			{ x: 110, y: -230 },
+			{ x: 220, y: -230 }
+		],
+		radius: 20
+	  },
+    onClick: function () {
+    console.log('clicked');
+    },
+    onDragEnd: function () {
+    console.log('drag ended');
+    update();
+    }
+  });
+
+  Draggable.create('#f5', 
+  {
+    type: 'x,y',
+    bounds: $('html'),
+    inertia: true,
+    liveSnap:
+    {
+		points: [
+			{ x: 0, y: 0 },
+			{ x: -110, y: -230 },
+			{ x: 0, y: -230 },
+			{ x: 110, y: -230 }
+		],
+		radius: 20
+	  },
+    onClick: function () {
+    console.log('clicked');
+    },
+    onDragEnd: function () {
+    console.log('drag ended');
+    update();
+    }
+  });
+
+  Draggable.create('#f6', 
+  {
+    type: 'x,y',
+    bounds: $('html'),
+    inertia: true,
+    liveSnap:
+    {
+		points: [
+			{ x: 0, y: 0 },
+			{ x: -220, y: -230 },
+			{ x: -110, y: -230 },
+			{ x: 0, y: -230 }
+		],
+		radius: 20
+	  },
+    onClick: function () {
+    console.log('clicked');
+    },
+    onDragEnd: function () {
+    console.log('drag ended');
+    update();
+    }
+  });
+
+  Draggable.create('#f7', 
+  {
+    type: 'x,y',
+    bounds: $('html'),
+    inertia: true,
+    liveSnap:
+    {
+		points: [
+			{ x: 0, y: 0 },
+			{ x: 0, y: -340 },
+			{ x: 110, y: -340 },
+			{ x: 220, y: -340 }
+		],
+		radius: 20
+	  },
+    onClick: function () {
+    console.log('clicked');
+    },
+    onDragEnd: function () {
+    console.log('drag ended');
+    update();
+    }
+  });
+
+  Draggable.create('#f8', 
+  {
+    type: 'x,y',
+    bounds: $('html'),
+    inertia: true,
+    liveSnap:
+    {
+		points: [
+			{ x: 0, y: 0 },
+			{ x: -110, y: -340 },
+			{ x: 0, y: -340 },
+			{ x: 110, y: -340 }
+		],
+		radius: 20
+	  },
+    onClick: function () {
+    console.log('clicked');
+    },
+    onDragEnd: function () {
+    console.log('drag ended');
+    update();
+    }
+  });
+
+  Draggable.create('#f9', 
+  {
+    type: 'x,y',
+    bounds: $('html'),
+    inertia: true,
+    liveSnap:
+    {
+		points: [
+			{ x: 0, y: 0 },
+			{ x: -220, y: -340 },
+			{ x: -110, y: -340 },
+			{ x: 0, y: -340 }
+		],
+		radius: 20
+	  },
+    onClick: function () {
+    console.log('clicked');
+    },
+    onDragEnd: function () {
+    console.log('drag ended');
+    update();
+    }
+  });
+
+  // ******** UPDATE ON DRAG RELEASE ********
+  
   //https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
   function update() {
   console.log("Running update")
@@ -90,6 +286,12 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log("snapped to a target!");
   }
 
+  //Create Offset from Initial
+  let cardOffsetX = cardX - cardStartX;
+  let cardOffsetY = cardStartY - cardY;
+  console.log(cardOffsetX);
+  console.log(cardOffsetY);
+
   } // *********** END OF UPDATE FUNCTION ***********
 
   // Create a function that spreads out the positions of all 9 cards
@@ -98,15 +300,18 @@ document.addEventListener("DOMContentLoaded", function() {
     let cardStart = document.querySelector(".card-start");
     // cardStart.style.grid = "1fr 1fr 1fr / 1fr 1fr 1fr";
     console.log(cards);
-    for(let i=0; i < 9; i++){
-      // cards[i].offsetLeft += i * 100;
-      // cards[i].style.grid = "1fr"
-      cards[i].classList.remove("stacked");
-    }
+    // for(let i=0; i < 9; i++){
+    //   // cards[i].offsetLeft += i * 100;
+    //   cardStart.style.display = "block";
+    //   cards[i].style.display = "block";
+    //   cards[i].classList.remove("stacked");
+    //   cards[i].style.setProperty("transform", `translate3d(0px, ${i * 100}px, 0px)`);
+    // }
+    cards[0].setAttribute("transform", "translate(100px);");
   }
 
-  // document.querySelector(".spread").addEventListener("click", () => {
-  //   spreadCards();
-  // });
+  document.querySelector(".spread").addEventListener("click", () => {
+    spreadCards();
+  });
 
 }); // END DOM Loaded Function
