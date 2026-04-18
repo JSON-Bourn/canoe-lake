@@ -1,12 +1,15 @@
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
+const overlay = document.getElementById("overlay");
+const overlayCtx = overlay ? overlay.getContext("2d") : null;
 
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
 const restartBtn = document.getElementById("restartBtn");
 const fileInput = document.getElementById("fileInput");
 const resultEl = document.getElementById("result");
+const scanLink = document.getElementById("scanLink");
 
 let stream = null;
 let scanning = false;
@@ -33,6 +36,91 @@ function setResult(text, flash = false) {
   }
 }
 
+function updateScanLink(href = "") {
+  if (!scanLink) {
+    return;
+  }
+
+  if (!href) {
+    scanLink.hidden = true;
+    scanLink.removeAttribute("href");
+    return;
+  }
+
+  scanLink.href = href;
+  scanLink.hidden = false;
+}
+
+function clearOverlay() {
+  if (!overlayCtx || !overlay) {
+    return;
+  }
+
+  overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
+}
+
+function syncOverlaySize() {
+  if (!overlay || !video.videoWidth || !video.videoHeight) {
+    return;
+  }
+
+  overlay.width = video.videoWidth;
+  overlay.height = video.videoHeight;
+}
+
+function drawDetectionOutline(location) {
+  if (!overlayCtx || !overlay || !location) {
+    return;
+  }
+
+  syncOverlaySize();
+  clearOverlay();
+
+  const points = [
+    location.topLeftCorner,
+    location.topRightCorner,
+    location.bottomRightCorner,
+    location.bottomLeftCorner,
+  ].filter(Boolean);
+
+  if (points.length !== 4) {
+    return;
+  }
+
+  overlayCtx.strokeStyle = "#F1DD42";
+  overlayCtx.lineWidth = 8;
+  overlayCtx.fillStyle = "rgba(241, 221, 66, 0.18)";
+  overlayCtx.beginPath();
+  overlayCtx.moveTo(points[0].x, points[0].y);
+  for (let index = 1; index < points.length; index += 1) {
+    overlayCtx.lineTo(points[index].x, points[index].y);
+  }
+  overlayCtx.closePath();
+  overlayCtx.fill();
+  overlayCtx.stroke();
+}
+
+function normalizeScanValue(value) {
+  if (typeof value !== "string") {
+    return { text: "", href: "" };
+  }
+
+  const trimmedValue = value.trim();
+
+  if (!trimmedValue) {
+    return { text: "", href: "" };
+  }
+
+  try {
+    return {
+      text: trimmedValue,
+      href: new URL(trimmedValue, window.location.href).href,
+    };
+  } catch {
+    return { text: trimmedValue, href: "" };
+  }
+}
+
 async function startCamera() {
   try {
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
@@ -45,6 +133,8 @@ async function startCamera() {
     await video.play();
 
     scanning = true;
+    updateScanLink();
+    clearOverlay();
     setResult("Scanning...");
 
     startBtn.disabled = true;
@@ -62,6 +152,7 @@ function stopCamera() {
     cancelAnimationFrame(rafId);
     rafId = null;
   }
+  clearOverlay();
   if (stream) {
     video.srcObject = null;
     stream.getTracks().forEach(track => track.stop());
@@ -78,13 +169,22 @@ function restartCamera() {
   startCamera();
 }
 
-function handleResult(value) {
+function handleResult(value, location = null) {
+  const normalized = normalizeScanValue(value);
+
+  if (!normalized.text) {
+    return;
+  }
+
+  drawDetectionOutline(location);
+  setResult("QR Code found: " + normalized.text, true);
+  updateScanLink(normalized.href);
   stopCamera();
-  try {
-    const url = new URL(value);
-    window.location.href = url.href;
-  } catch {
-    setResult(value, true);
+
+  if (normalized.href) {
+    window.setTimeout(() => {
+      window.location.href = normalized.href;
+    }, 350);
   }
 }
 
@@ -97,7 +197,12 @@ function scanLoop() {
         if (!scanning) return;
 
         if (barcodes.length > 0 && barcodes[0].rawValue) {
-          handleResult(barcodes[0].rawValue);
+          handleResult(barcodes[0].rawValue, barcodes[0].cornerPoints ? {
+            topLeftCorner: barcodes[0].cornerPoints[0],
+            topRightCorner: barcodes[0].cornerPoints[1],
+            bottomRightCorner: barcodes[0].cornerPoints[2],
+            bottomLeftCorner: barcodes[0].cornerPoints[3],
+          } : null);
           return;
         }
 
@@ -119,18 +224,23 @@ function scanLoop() {
 
 function scanWithJsQR() {
   if (typeof window.jsQR !== "function") {
+    setResult("QR scanner library did not load.");
     return;
   }
 
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
+  syncOverlaySize();
+  clearOverlay();
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
   const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const code = window.jsQR(imageData.data, imageData.width, imageData.height);
+  const code = window.jsQR(imageData.data, imageData.width, imageData.height, {
+    inversionAttempts: "attemptBoth",
+  });
 
   if (code && code.data) {
-    handleResult(code.data);
+    handleResult(code.data, code.location);
   }
 }
 

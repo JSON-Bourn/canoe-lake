@@ -21,6 +21,7 @@
 
     <div class="camera-preview">
       <video id="video" autoplay playsinline muted></video>
+      <canvas id="overlay" class="camera-overlay" aria-hidden="true"></canvas>
     </div>
     <canvas id="canvas" hidden></canvas>
 
@@ -35,6 +36,7 @@
     </div>
 
     <p id="result" class="camera-scan-result" aria-live="polite">Tap OPEN CAMERA to scan a QR code.</p>
+    <a id="scanLink" class="begin-btn" href="#" hidden>OPEN SCANNED PAGE</a>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
