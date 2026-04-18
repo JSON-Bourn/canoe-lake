@@ -1,3 +1,7 @@
+const video = document.getElementById("video");
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
 const restartBtn = document.getElementById("restartBtn");
@@ -11,7 +15,6 @@ let hasNavigated = false;
 
 function setResult(text, flash = false) {
   resultEl.textContent = text;
-
   if (flash) {
     resultEl.classList.add("flash");
     setTimeout(() => resultEl.classList.remove("flash"), 1000);
@@ -24,28 +27,16 @@ function updateScanLink(href = "") {
     scanLink.removeAttribute("href");
     return;
   }
-
   scanLink.href = href;
   scanLink.hidden = false;
 }
 
-function resolveScannedHref(value) {
-  if (!value) return "";
-
-  const trimmed = value.trim();
+function resolveUrl(text) {
+  if (!text) return "";
 
   try {
-    if (/^https?:\/\//i.test(trimmed)) {
-      return new URL(trimmed).href;
-    }
-
-    if (/^www\./i.test(trimmed)) {
-      return new URL(`https://${trimmed}`).href;
-    }
-
-    if (/^(\.\/|\.\.\/|\/)/.test(trimmed) || /\.html?/.test(trimmed)) {
-      return new URL(trimmed, window.location.href).href;
-    }
+    if (/^https?:\/\//i.test(text)) return text;
+    if (/^www\./i.test(text)) return "https://" + text;
   } catch {}
 
   return "";
@@ -54,53 +45,41 @@ function resolveScannedHref(value) {
 function handleResult(decodedText) {
   if (hasNavigated) return;
 
-  const href = resolveScannedHref(decodedText);
+  setResult("QR found: " + decodedText, true);
 
-  setResult("QR Code found: " + decodedText, true);
-  updateScanLink(href);
+  const url = resolveUrl(decodedText);
+  updateScanLink(url);
 
   stopCamera();
 
-  if (href) {
+  if (url) {
     hasNavigated = true;
     setResult("Redirecting...", true);
-
-    setTimeout(() => {
-      window.location.href = href;
-    }, 400);
-  } else {
-    setResult("QR found but not a valid URL", true);
+    setTimeout(() => window.location.href = url, 400);
   }
 }
 
 async function startCamera() {
   if (!window.isSecureContext) {
-    setResult("Camera requires HTTPS", true);
+    setResult("HTTPS required", true);
     return;
   }
 
-  html5QrCode = new Html5Qrcode("reader");
+  html5QrCode = new Html5Qrcode("video"); // IMPORTANT: attach to your existing UI
 
   try {
     await html5QrCode.start(
       { facingMode: "environment" },
       {
         fps: 10,
-
-        // KEY FIX for mobile scanning
         qrbox: (w, h) => {
-          const size = Math.min(w, h) * 0.8;
+          const size = Math.min(w, h) * 0.75;
           return { width: size, height: size };
         }
       },
-
-      (decodedText) => {
-        console.log("DETECTED:", decodedText);
-        handleResult(decodedText);
-      },
-
+      (decodedText) => handleResult(decodedText),
       (err) => {
-        console.log("Scan error:", err);
+        // keep silent (iOS produces noise here)
       }
     );
 
@@ -108,14 +87,12 @@ async function startCamera() {
     hasNavigated = false;
 
     setResult("Scanning...");
-    updateScanLink();
-
     startBtn.disabled = true;
     stopBtn.disabled = false;
     restartBtn.disabled = true;
 
-  } catch (err) {
-    setResult("Camera error: " + err, true);
+  } catch (e) {
+    setResult("Camera error: " + e, true);
   }
 }
 
@@ -125,9 +102,7 @@ async function stopCamera() {
   try {
     await html5QrCode.stop();
     await html5QrCode.clear();
-  } catch (e) {
-    console.log("Stop error:", e);
-  }
+  } catch {}
 
   scanning = false;
 
@@ -140,31 +115,25 @@ function restartCamera() {
   stopCamera().then(startCamera);
 }
 
-// Image file fallback
-async function scanImageFile(file) {
-  if (!html5QrCode) {
-    html5QrCode = new Html5Qrcode("reader");
-  }
-
-  try {
-    const result = await html5QrCode.scanFile(file, true);
-    handleResult(result);
-  } catch {
-    setResult("No QR code found in image", true);
-  }
-}
-
-// Event listeners
-startBtn.addEventListener("click", startCamera);
-stopBtn.addEventListener("click", stopCamera);
-restartBtn.addEventListener("click", restartCamera);
-
+// image upload fallback
 if (fileInput) {
-  fileInput.addEventListener("change", (e) => {
-    if (e.target.files.length > 0) {
-      scanImageFile(e.target.files[0]);
+  fileInput.addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!html5QrCode) {
+      html5QrCode = new Html5Qrcode("video");
+    }
+
+    try {
+      const result = await html5QrCode.scanFile(file, true);
+      handleResult(result);
+    } catch {
+      setResult("No QR found in image", true);
     }
   });
 }
 
-console.log("Scanner ready");
+startBtn.addEventListener("click", startCamera);
+stopBtn.addEventListener("click", stopCamera);
+restartBtn.addEventListener("click", restartCamera);
