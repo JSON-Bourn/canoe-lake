@@ -1,6 +1,6 @@
 const video = document.getElementById("video");
 const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
+const ctx = canvas.getContext("2d", { willReadFrequently: true });
 const overlay = document.getElementById("overlay");
 const overlayCtx = overlay ? overlay.getContext("2d") : null;
 
@@ -16,6 +16,10 @@ let scanning = false;
 let rafId = null;
 let barcodeDetector = null;
 let hasNavigated = false;
+let lastJsQrAttemptAt = 0;
+
+const JSQR_INTERVAL_MS = 140;
+const MAX_SCAN_DIMENSION = 960;
 
 if ("BarcodeDetector" in window) {
   try {
@@ -150,12 +154,33 @@ function normalizeScanValue(value) {
 
 async function startCamera() {
   try {
+    if (!window.isSecureContext) {
+      setResult("Camera requires HTTPS on iPhone. Open this site over HTTPS (not plain HTTP).", true);
+      return;
+    }
+
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
       setResult("This browser does not support camera access.");
       return;
     }
 
-    stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+    const preferredConstraints = {
+      audio: false,
+      video: {
+        facingMode: { ideal: "environment" },
+        width: { ideal: 1280 },
+        height: { ideal: 720 },
+      },
+    };
+
+    try {
+      stream = await navigator.mediaDevices.getUserMedia(preferredConstraints);
+    } catch {
+      stream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: { facingMode: "environment" },
+      });
+    }
     video.srcObject = stream;
     await video.play();
 
@@ -170,7 +195,7 @@ async function startCamera() {
     restartBtn.disabled = true;
     scanLoop();
   } catch (err) {
-    alert("Error accessing camera: " + err.message);
+    setResult("Unable to access camera: " + err.message, true);
   }
 }
 
@@ -260,12 +285,23 @@ function scanLoop() {
 
 function scanWithJsQR() {
   if (typeof window.jsQR !== "function") {
-    setResult("QR scanner library did not load.");
+    setResult("Loading QR scanner library...");
     return;
   }
 
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
+  const now = performance.now();
+  if (now - lastJsQrAttemptAt < JSQR_INTERVAL_MS) {
+    return;
+  }
+  lastJsQrAttemptAt = now;
+
+  const sourceWidth = video.videoWidth;
+  const sourceHeight = video.videoHeight;
+  const scale = Math.min(1, MAX_SCAN_DIMENSION / Math.max(sourceWidth, sourceHeight));
+
+  canvas.width = Math.max(1, Math.floor(sourceWidth * scale));
+  canvas.height = Math.max(1, Math.floor(sourceHeight * scale));
+
   syncOverlaySize();
   clearOverlay();
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);

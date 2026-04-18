@@ -40,6 +40,13 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
+  <script>
+    if (typeof window.jsQR !== "function") {
+      const fallbackScript = document.createElement("script");
+      fallbackScript.src = "https://unpkg.com/jsqr/dist/jsQR.js";
+      document.head.appendChild(fallbackScript);
+    }
+  </script>
   <script src="./scripts/camera-view.js"></script>
 </body>
 </html>
