@@ -15,6 +15,7 @@ let stream = null;
 let scanning = false;
 let rafId = null;
 let barcodeDetector = null;
+let hasNavigated = false;
 
 if ("BarcodeDetector" in window) {
   try {
@@ -100,6 +101,36 @@ function drawDetectionOutline(location) {
   overlayCtx.stroke();
 }
 
+function resolveScannedHref(value) {
+  if (typeof value !== "string") {
+    return "";
+  }
+
+  const trimmedValue = value.trim();
+
+  if (!trimmedValue) {
+    return "";
+  }
+
+  try {
+    if (/^https?:\/\//i.test(trimmedValue) || /^file:\/\//i.test(trimmedValue)) {
+      return new URL(trimmedValue).href;
+    }
+
+    if (/^www\./i.test(trimmedValue)) {
+      return new URL(`https://${trimmedValue}`).href;
+    }
+
+    if (/^(\.\/|\.\.\/|\/)/.test(trimmedValue) || /\.html?(?:[?#].*)?$/i.test(trimmedValue)) {
+      return new URL(trimmedValue, window.location.href).href;
+    }
+  } catch {
+    return "";
+  }
+
+  return "";
+}
+
 function normalizeScanValue(value) {
   if (typeof value !== "string") {
     return { text: "", href: "" };
@@ -111,14 +142,10 @@ function normalizeScanValue(value) {
     return { text: "", href: "" };
   }
 
-  try {
-    return {
-      text: trimmedValue,
-      href: new URL(trimmedValue, window.location.href).href,
-    };
-  } catch {
-    return { text: trimmedValue, href: "" };
-  }
+  return {
+    text: trimmedValue,
+    href: resolveScannedHref(trimmedValue),
+  };
 }
 
 async function startCamera() {
@@ -133,6 +160,7 @@ async function startCamera() {
     await video.play();
 
     scanning = true;
+    hasNavigated = false;
     updateScanLink();
     clearOverlay();
     setResult("Scanning...");
@@ -170,6 +198,10 @@ function restartCamera() {
 }
 
 function handleResult(value, location = null) {
+  if (hasNavigated) {
+    return;
+  }
+
   const normalized = normalizeScanValue(value);
 
   if (!normalized.text) {
@@ -182,9 +214,13 @@ function handleResult(value, location = null) {
   stopCamera();
 
   if (normalized.href) {
+    hasNavigated = true;
+    setResult("QR Code found. Redirecting...", true);
     window.setTimeout(() => {
-      window.location.href = normalized.href;
+      window.location.assign(normalized.href);
     }, 350);
+  } else {
+    setResult("QR code found, but it does not contain a navigable URL.", true);
   }
 }
 
@@ -255,7 +291,7 @@ function scanImageFile(file) {
     const code = window.jsQR(imageData.data, imageData.width, imageData.height);
 
     if (code && code.data) {
-      setResult("QR Code (from file): " + code.data, true);
+      handleResult(code.data, code.location || null);
     } else {
       setResult("No QR code found in image.");
     }
