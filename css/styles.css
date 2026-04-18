@@ -266,15 +266,15 @@ img {
 }
 
 body.fragment #cardImage {
- width: 125px;
- height: 103px;
+ width: 416px;
+ height: 495px;
  object-fit: cover;
 }
 
 
 body.chapter #cardImage {
- width: 214px;
- height: 176px;
+ width: 416px;
+ height: 495px;
  object-fit: cover;
 }
 
