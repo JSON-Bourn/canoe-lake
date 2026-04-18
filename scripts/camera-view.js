@@ -18,6 +18,7 @@ let barcodeDetector = null;
 let hasNavigated = false;
 let lastJsQrAttemptAt = 0;
 let hasWarnedAboutJsQrLoad = false;
+let statusUpdateCounter = 0;
 
 const JSQR_INTERVAL_MS = 180;
 const MAX_SCAN_DIMENSION = 640;
@@ -320,6 +321,11 @@ function scanWithJsQR() {
   }
   lastJsQrAttemptAt = now;
 
+  statusUpdateCounter = (statusUpdateCounter + 1) % 3;
+  if (statusUpdateCounter === 0) {
+    setResult("Scanning... (reading camera)");
+  }
+
   const sourceWidth = video.videoWidth;
   const sourceHeight = video.videoHeight;
   const scale = Math.min(1, MAX_SCAN_DIMENSION / Math.max(sourceWidth, sourceHeight));
@@ -327,9 +333,15 @@ function scanWithJsQR() {
   canvas.width = Math.max(1, Math.floor(sourceWidth * scale));
   canvas.height = Math.max(1, Math.floor(sourceHeight * scale));
 
+  try {
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  } catch (err) {
+    setResult("Error reading camera frame: " + err.message, true);
+    return;
+  }
+
   syncOverlaySize();
   clearOverlay();
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
   const code = decodeQrFromCanvas(ctx, canvas.width, canvas.height);
   if (code && code.data) {
@@ -360,13 +372,22 @@ function decodeQrFromCanvas(context, width, height) {
       continue;
     }
 
-    const imageData = context.getImageData(attempt.x, attempt.y, attempt.w, attempt.h);
-    const code = window.jsQR(imageData.data, imageData.width, imageData.height, {
-      inversionAttempts: "attemptBoth",
-    });
+    try {
+      const imageData = context.getImageData(attempt.x, attempt.y, attempt.w, attempt.h);
+      if (!imageData || !imageData.data) {
+        continue;
+      }
 
-    if (code && code.data) {
-      return code;
+      const code = window.jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: "attemptBoth",
+      });
+
+      if (code && code.data) {
+        return code;
+      }
+    } catch (err) {
+      console.error("Decode attempt " + (index + 1) + " failed:", err);
+      continue;
     }
   }
 
@@ -376,14 +397,21 @@ function decodeQrFromCanvas(context, width, height) {
 function scanImageFile(file) {
   const img = new Image();
   img.onerror = () => {
-    setResult("Could not read that image file. Please try a JPG/PNG photo of the QR code.", true);
+    setResult("Could not load image. Please ensure it's a valid JPG/PNG file of a QR code.", true);
+    console.error("Image load failed for file:", file);
   };
 
   img.onload = () => {
     const scale = Math.min(1, MAX_SCAN_DIMENSION / Math.max(img.width, img.height));
     canvas.width = Math.max(1, Math.floor(img.width * scale));
     canvas.height = Math.max(1, Math.floor(img.height * scale));
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    
+    try {
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    } catch (err) {
+      setResult("Error processing image: " + err.message, true);
+      return;
+    }
 
     if (typeof window.jsQR !== "function") {
       setResult("QR scanner library is still loading. Please try again in a moment.", true);
@@ -395,12 +423,14 @@ function scanImageFile(file) {
     if (code && code.data) {
       handleResult(code.data, code.location || null);
     } else {
-      setResult("No QR code found in image.");
+      setResult("No QR code found in image. Try a brighter photo or closer distance.", true);
     }
   };
 
   img.src = URL.createObjectURL(file);
 }
+
+console.log("Camera view script loaded. iOS:", isIOS, "BarcodeDetector:", !!barcodeDetector, "jsQR:", typeof window.jsQR);
 
 startBtn.addEventListener("click", startCamera);
 stopBtn.addEventListener("click", stopCamera);
