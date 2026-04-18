@@ -21,6 +21,10 @@ let hasWarnedAboutJsQrLoad = false;
 
 const JSQR_INTERVAL_MS = 180;
 const MAX_SCAN_DIMENSION = 640;
+const DETECT_TIMEOUT_MS = 250;
+
+const isIOS = /iPad|iPhone|iPod/.test(window.navigator.userAgent)
+  || (window.navigator.platform === "MacIntel" && window.navigator.maxTouchPoints > 1);
 
 if ("BarcodeDetector" in window) {
   try {
@@ -28,6 +32,11 @@ if ("BarcodeDetector" in window) {
   } catch (error) {
     barcodeDetector = null;
   }
+}
+
+if (isIOS) {
+  // iOS implementations can stall detect() and freeze the scan loop.
+  barcodeDetector = null;
 }
 
 function setResult(text, flash = false) {
@@ -259,7 +268,14 @@ function scanLoop() {
 
   if (video.readyState >= video.HAVE_CURRENT_DATA && video.videoWidth > 0 && video.videoHeight > 0) {
     if (barcodeDetector) {
-      barcodeDetector.detect(video).then((barcodes) => {
+      const detectWithTimeout = Promise.race([
+        barcodeDetector.detect(video),
+        new Promise((resolve) => {
+          window.setTimeout(() => resolve([]), DETECT_TIMEOUT_MS);
+        }),
+      ]);
+
+      detectWithTimeout.then((barcodes) => {
         if (!scanning) return;
 
         if (barcodes.length > 0 && barcodes[0].rawValue) {
@@ -315,42 +331,66 @@ function scanWithJsQR() {
   clearOverlay();
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const code = window.jsQR(imageData.data, imageData.width, imageData.height, {
-    inversionAttempts: "attemptBoth",
-  });
-
+  const code = decodeQrFromCanvas(ctx, canvas.width, canvas.height);
   if (code && code.data) {
-    handleResult(code.data, code.location);
-    return;
+    handleResult(code.data, code.location || null);
   }
+}
 
-  const cropWidth = Math.floor(canvas.width * 0.7);
-  const cropHeight = Math.floor(canvas.height * 0.7);
-  const cropX = Math.floor((canvas.width - cropWidth) / 2);
-  const cropY = Math.floor((canvas.height - cropHeight) / 2);
+function decodeQrFromCanvas(context, width, height) {
+  const attempts = [
+    { x: 0, y: 0, w: width, h: height },
+    {
+      x: Math.floor(width * 0.15),
+      y: Math.floor(height * 0.15),
+      w: Math.floor(width * 0.7),
+      h: Math.floor(height * 0.7),
+    },
+    {
+      x: Math.floor(width * 0.25),
+      y: Math.floor(height * 0.25),
+      w: Math.floor(width * 0.5),
+      h: Math.floor(height * 0.5),
+    },
+  ];
 
-  if (cropWidth > 0 && cropHeight > 0) {
-    const croppedImageData = ctx.getImageData(cropX, cropY, cropWidth, cropHeight);
-    const croppedCode = window.jsQR(croppedImageData.data, croppedImageData.width, croppedImageData.height, {
+  for (let index = 0; index < attempts.length; index += 1) {
+    const attempt = attempts[index];
+    if (attempt.w <= 0 || attempt.h <= 0) {
+      continue;
+    }
+
+    const imageData = context.getImageData(attempt.x, attempt.y, attempt.w, attempt.h);
+    const code = window.jsQR(imageData.data, imageData.width, imageData.height, {
       inversionAttempts: "attemptBoth",
     });
 
-    if (croppedCode && croppedCode.data) {
-      handleResult(croppedCode.data, null);
+    if (code && code.data) {
+      return code;
     }
   }
+
+  return null;
 }
 
 function scanImageFile(file) {
   const img = new Image();
+  img.onerror = () => {
+    setResult("Could not read that image file. Please try a JPG/PNG photo of the QR code.", true);
+  };
+
   img.onload = () => {
-    canvas.width = img.width;
-    canvas.height = img.height;
+    const scale = Math.min(1, MAX_SCAN_DIMENSION / Math.max(img.width, img.height));
+    canvas.width = Math.max(1, Math.floor(img.width * scale));
+    canvas.height = Math.max(1, Math.floor(img.height * scale));
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const code = window.jsQR(imageData.data, imageData.width, imageData.height);
+    if (typeof window.jsQR !== "function") {
+      setResult("QR scanner library is still loading. Please try again in a moment.", true);
+      return;
+    }
+
+    const code = decodeQrFromCanvas(ctx, canvas.width, canvas.height);
 
     if (code && code.data) {
       handleResult(code.data, code.location || null);
