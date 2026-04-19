@@ -32,6 +32,7 @@
   --card-bg: #444;
   --solve-grid-bg: #666;
   --solve-grid-color: #999;
+  --inactive-button: #999;
 }
 
 /* 0. HEADER */
@@ -82,7 +83,7 @@ li {
   justify-content: center;
   margin: 0;
   padding: 0;
-  gap:1em;
+  gap:0.5em;
 }
 
 .nav-list a {
@@ -393,6 +394,11 @@ body.chapter #cardImage {
   cursor: pointer;
   font-size: 0.9rem;
   transition: 0.2s;
+}
+
+.inactive {
+  color: var(--inactive-button) !important;
+  border: 1px solid var(--inactive-button) !important;
 }
 
 #playBtn,

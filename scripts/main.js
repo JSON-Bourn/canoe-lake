@@ -10,13 +10,17 @@
 
 document.addEventListener("DOMContentLoaded", function() { 
 
+  // Get HTML Button elements
+  const resetBtn = $(".reset");
+  const solveBtn = $(".solve");
+
   //Get initial x,y of all cards.
   const f1Elem = document.getElementById("f1"); 
   const f1InitPos = f1Elem.getBoundingClientRect();
   const f1InitX = f1InitPos.x;
   const f1InitY = f1InitPos.y;
 
-  // Set defatul offsets for liveSnap
+  // Set default offsets for liveSnap
   // -- Y offset by row
   var row1OffsetY = -120;
   var row2OffsetY = -230;
@@ -147,8 +151,8 @@ document.addEventListener("DOMContentLoaded", function() {
   //Print coords of the snap card:
   let cardX = card.x;
   let cardY = card.y;
-  console.log("X coord of snapped card: " + cardX);
-  console.log("Y coord of snapped card: " + cardY);
+  // console.log("X coord of snapped card: " + cardX);
+  // console.log("Y coord of snapped card: " + cardY);
   
   //the HTML element of the targeted snap grid:
   const snapTarget1 = document.getElementById('s1');
@@ -188,24 +192,89 @@ document.addEventListener("DOMContentLoaded", function() {
     snapCard.classList.remove("card-selected")
   )
 
-  } // *********** END OF UPDATE FUNCTION ***********
+  // Check if 3 fragments are selected to activate Solve Button
+  let submission = document.querySelectorAll(".card-selected");
+  if (submission.length === 3) {
+    solveBtn[0].classList.remove("inactive");
+    // console.log(solveBtn);
+  }
+  else {
+    solveBtn[0].classList.add("inactive");
+  }
+
+  } // ************ END OF UPDATE FUNCTION ************
 
 
-  // *********** RESET BUTTON FUNCTION ***********
+  // ************ RESET BUTTON FUNCTION ************
   // Create a function that spreads out the positions of all 9 cards
   function resetCards() {
     cardArray.forEach( (card, i) => {
-      console.log(card.id);
+      // console.log(card.id);
       // Reset card position
       gsap.set(card.draggable[0].target, { clearProps: "x,y" });
       // Remove selected class
-      card.elem.removeClass("card-selected")
+      card.elem.removeClass("card-selected");
       // console.log(card);
     });
   }
 
+  // ************ SOLVE BUTTON FUNCTION ************
+  function solveChapter() {
+    try {
+      let answer = document.querySelectorAll(".card-selected");
+      let chapterSubmit = [answer[0].id, answer[1].id, answer[2].id];
+      let chapter1 = ["f1", "f2", "f3"];
+      let chapter2 = ["f4", "f5", "f6"];
+      let chapter3 = ["f7", "f8", "f9"];
+      let isCorrect = false;
+      // Test 
+      // console.log(chapterSubmit);
+      // console.log(chapter1);
+  
+      if (chapterSubmit[0] === chapter1[0] &&
+          chapterSubmit[1] === chapter1[1] &&
+          chapterSubmit[2] === chapter1[2]) 
+      {
+        isCorrect = true;
+      }
+      else if (chapterSubmit[0] === chapter2[0] &&
+              chapterSubmit[1] === chapter2[1] &&
+              chapterSubmit[2] === chapter2[2]) 
+      {
+        isCorrect = true;
+      }
+      else if (chapterSubmit[0] === chapter3[0] &&
+              chapterSubmit[1] === chapter3[1] &&
+              chapterSubmit[2] === chapter3[2]) 
+      {
+        isCorrect = true;
+      }
+
+      if (isCorrect)
+      {
+       console.log("Chapter Complete!");
+      }
+
+      else {
+        console.log("This is not a correct chapter");
+      }
+    }
+    catch {
+      console.log("3 fragments must be selected to solve.");
+    }
+
+    }
+
+
+
+
+  // *********** EVENT LISTENERS *************
   document.querySelector(".reset").addEventListener("click", () => {
     resetCards();
+    solveBtn[0].classList.add("inactive");
+  });
+  document.querySelector(".solve").addEventListener("click", () => {
+    solveChapter();
   });
 
 }); // END DOM Loaded Function
