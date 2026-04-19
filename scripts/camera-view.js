@@ -1,9 +1,3 @@
-const video = document.getElementById("video");
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d", { willReadFrequently: true });
-const overlay = document.getElementById("overlay");
-const overlayCtx = overlay ? overlay.getContext("2d") : null;
-
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
 const restartBtn = document.getElementById("restartBtn");
@@ -11,36 +5,20 @@ const fileInput = document.getElementById("fileInput");
 const resultEl = document.getElementById("result");
 const scanLink = document.getElementById("scanLink");
 
-let stream = null;
+let html5QrCode = null;
 let scanning = false;
-let rafId = null;
 let hasNavigated = false;
-let lastJsQrAttemptAt = 0;
-let hasWarnedAboutJsQrLoad = false;
-
-const JSQR_INTERVAL_MS = 150;
-const MAX_SCAN_DIMENSION = 640;
-
-const isIOS = /iPad|iPhone|iPod/.test(window.navigator.userAgent)
-  || (window.navigator.platform === "MacIntel" && window.navigator.maxTouchPoints > 1);
 
 function setResult(text, flash = false) {
-  if (!resultEl) {
-    return;
-  }
-
   resultEl.textContent = text;
+
   if (flash) {
     resultEl.classList.add("flash");
-    window.setTimeout(() => resultEl.classList.remove("flash"), 1000);
+    setTimeout(() => resultEl.classList.remove("flash"), 1000);
   }
 }
 
 function updateScanLink(href = "") {
-  if (!scanLink) {
-    return;
-  }
-
   if (!href) {
     scanLink.hidden = true;
     scanLink.removeAttribute("href");
@@ -51,302 +29,135 @@ function updateScanLink(href = "") {
   scanLink.hidden = false;
 }
 
-function clearOverlay() {
-  if (!overlayCtx || !overlay) {
-    return;
-  }
-
-  overlayCtx.clearRect(0, 0, overlay.width, overlay.height);
-}
-
-function syncOverlaySize() {
-  if (!overlay || !video.videoWidth || !video.videoHeight) {
-    return;
-  }
-
-  overlay.width = video.videoWidth;
-  overlay.height = video.videoHeight;
-}
-
 function resolveScannedHref(value) {
-  if (typeof value !== "string") {
-    return "";
-  }
+  if (!value) return "";
 
-  const trimmedValue = value.trim();
-
-  if (!trimmedValue) {
-    return "";
-  }
+  const trimmed = value.trim();
 
   try {
-    if (/^https?:\/\//i.test(trimmedValue) || /^file:\/\//i.test(trimmedValue)) {
-      return new URL(trimmedValue).href;
+    if (/^https?:\/\//i.test(trimmed)) {
+      return new URL(trimmed).href;
     }
 
-    if (/^www\./i.test(trimmedValue)) {
-      return new URL(`https://${trimmedValue}`).href;
+    if (/^www\./i.test(trimmed)) {
+      return new URL(`https://${trimmed}`).href;
     }
 
-    if (/^(\.\/|\.\.\/|\/)/.test(trimmedValue) || /\.html?(?:[?#].*)?$/i.test(trimmedValue)) {
-      return new URL(trimmedValue, window.location.href).href;
+    if (/^(\.\/|\.\.\/|\/)/.test(trimmed) || /\.html?/.test(trimmed)) {
+      return new URL(trimmed, window.location.href).href;
     }
-  } catch {
-    return "";
-  }
+  } catch {}
 
   return "";
 }
 
-function normalizeScanValue(value) {
-  if (typeof value !== "string") {
-    return { text: "", href: "" };
+function handleResult(decodedText) {
+  if (hasNavigated) return;
+
+  const href = resolveScannedHref(decodedText);
+
+  setResult("QR Code found: " + decodedText, true);
+  updateScanLink(href);
+
+  stopCamera();
+
+  if (href) {
+    hasNavigated = true;
+    setResult("Redirecting...", true);
+
+    setTimeout(() => {
+      window.location.href = href;
+    }, 400);
+  } else {
+    setResult("QR found but not a valid URL", true);
   }
-
-  const trimmedValue = value.trim();
-
-  if (!trimmedValue) {
-    return { text: "", href: "" };
-  }
-
-  return {
-    text: trimmedValue,
-    href: resolveScannedHref(trimmedValue),
-  };
 }
 
 async function startCamera() {
+  if (!window.isSecureContext) {
+    setResult("Camera requires HTTPS", true);
+    return;
+  }
+
+  html5QrCode = new Html5Qrcode("reader");
+
   try {
-    if (!window.isSecureContext) {
-      setResult("Camera requires HTTPS. Open this site over HTTPS.", true);
-      return;
-    }
+    await html5QrCode.start(
+      { facingMode: "environment" },
+      {
+        fps: 10,
 
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      setResult("This browser does not support camera access.");
-      return;
-    }
-
-    const preferredConstraints = {
-      audio: false,
-      video: {
-        facingMode: { ideal: "environment" },
-        width: { ideal: 1280 },
-        height: { ideal: 720 },
+        qrbox: (w, h) => {
+          const size = Math.min(w, h) * 0.8;
+          return { width: size, height: size };
+        }
       },
-    };
 
-    try {
-      stream = await navigator.mediaDevices.getUserMedia(preferredConstraints);
-    } catch {
-      stream = await navigator.mediaDevices.getUserMedia({
-        audio: false,
-        video: { facingMode: "environment" },
-      });
-    }
+      (decodedText) => {
+        console.log("DETECTED:", decodedText);
+        handleResult(decodedText);
+      },
 
-    video.setAttribute("playsinline", "true");
-    video.setAttribute("webkit-playsinline", "true");
-    video.muted = true;
-    video.srcObject = stream;
-    await video.play();
+      (err) => {
+        console.log("Scan error:", err);
+      }
+    );
 
     scanning = true;
     hasNavigated = false;
-    updateScanLink();
-    clearOverlay();
+
     setResult("Scanning...");
+    updateScanLink();
 
     startBtn.disabled = true;
     stopBtn.disabled = false;
     restartBtn.disabled = true;
-    scanLoop();
+
   } catch (err) {
-    setResult("Unable to access camera: " + err.message, true);
+    setResult("Camera error: " + err, true);
   }
 }
 
-function stopCamera() {
+async function stopCamera() {
+  if (!html5QrCode || !scanning) return;
+
+  try {
+    await html5QrCode.stop();
+    await html5QrCode.clear();
+  } catch (e) {
+    console.log("Stop error:", e);
+  }
+
   scanning = false;
-  if (rafId) {
-    cancelAnimationFrame(rafId);
-    rafId = null;
-  }
-  clearOverlay();
-  if (stream) {
-    video.srcObject = null;
-    stream.getTracks().forEach(track => track.stop());
-    stream = null;
-  }
-  video.pause();
+
   startBtn.disabled = false;
   stopBtn.disabled = true;
   restartBtn.disabled = false;
 }
 
 function restartCamera() {
-  stopCamera();
-  startCamera();
+  stopCamera().then(startCamera);
 }
 
-function handleResult(value, location = null) {
-  if (hasNavigated) {
-    return;
+// Image file fallback
+async function scanImageFile(file) {
+  if (!html5QrCode) {
+    html5QrCode = new Html5Qrcode("reader");
   }
-
-  const normalized = normalizeScanValue(value);
-
-  if (!normalized.text) {
-    return;
-  }
-
-  setResult("QR Code found: " + normalized.text, true);
-  updateScanLink(normalized.href);
-  stopCamera();
-
-  if (normalized.href) {
-    hasNavigated = true;
-    setResult("QR Code found. Redirecting...", true);
-    window.setTimeout(() => {
-      window.location.assign(normalized.href);
-    }, 350);
-  } else {
-    setResult("QR code found, but it does not contain a navigable URL.", true);
-  }
-}
-
-function scanLoop() {
-  if (!scanning) return;
-
-  if (video.readyState >= video.HAVE_CURRENT_DATA && video.videoWidth > 0 && video.videoHeight > 0) {
-    scanWithJsQR();
-  }
-
-  rafId = requestAnimationFrame(scanLoop);
-}
-
-function decodeQrFromCanvas(context, width, height) {
-  const attempts = [
-    { x: 0, y: 0, w: width, h: height },
-    {
-      x: Math.floor(width * 0.15),
-      y: Math.floor(height * 0.15),
-      w: Math.floor(width * 0.7),
-      h: Math.floor(height * 0.7),
-    },
-    {
-      x: Math.floor(width * 0.25),
-      y: Math.floor(height * 0.25),
-      w: Math.floor(width * 0.5),
-      h: Math.floor(height * 0.5),
-    },
-  ];
-
-  for (let index = 0; index < attempts.length; index += 1) {
-    const attempt = attempts[index];
-    if (attempt.w <= 0 || attempt.h <= 0) {
-      continue;
-    }
-
-    try {
-      const imageData = context.getImageData(attempt.x, attempt.y, attempt.w, attempt.h);
-      if (!imageData || !imageData.data) {
-        continue;
-      }
-
-      const code = window.jsQR(imageData.data, imageData.width, imageData.height, {
-        inversionAttempts: "attemptBoth",
-      });
-
-      if (code && code.data) {
-        return code;
-      }
-    } catch (err) {
-      console.error("Decode attempt " + (index + 1) + " failed:", err);
-      continue;
-    }
-  }
-
-  return null;
-}
-
-function scanWithJsQR() {
-  if (typeof window.jsQR !== "function") {
-    if (!hasWarnedAboutJsQrLoad) {
-      setResult("Loading QR scanner library...");
-      hasWarnedAboutJsQrLoad = true;
-    }
-    return;
-  }
-  hasWarnedAboutJsQrLoad = false;
-
-  const now = performance.now();
-  if (now - lastJsQrAttemptAt < JSQR_INTERVAL_MS) {
-    return;
-  }
-  lastJsQrAttemptAt = now;
-
-  const sourceWidth = video.videoWidth;
-  const sourceHeight = video.videoHeight;
-  const scale = Math.min(1, MAX_SCAN_DIMENSION / Math.max(sourceWidth, sourceHeight));
-
-  canvas.width = Math.max(1, Math.floor(sourceWidth * scale));
-  canvas.height = Math.max(1, Math.floor(sourceHeight * scale));
 
   try {
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  } catch (err) {
-    setResult("Error reading camera frame: " + err.message, true);
-    return;
-  }
-
-  syncOverlaySize();
-  clearOverlay();
-
-  const code = decodeQrFromCanvas(ctx, canvas.width, canvas.height);
-  if (code && code.data) {
-    handleResult(code.data, code.location || null);
+    const result = await html5QrCode.scanFile(file, true);
+    handleResult(result);
+  } catch {
+    setResult("No QR code found in image", true);
   }
 }
 
-function scanImageFile(file) {
-  const img = new Image();
-  img.onerror = () => {
-    setResult("Could not load image. Please use a JPG/PNG of a QR code.", true);
-  };
-
-  img.onload = () => {
-    const scale = Math.min(1, MAX_SCAN_DIMENSION / Math.max(img.width, img.height));
-    canvas.width = Math.max(1, Math.floor(img.width * scale));
-    canvas.height = Math.max(1, Math.floor(img.height * scale));
-
-    try {
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    } catch (err) {
-      setResult("Error processing image: " + err.message, true);
-      return;
-    }
-
-    if (typeof window.jsQR !== "function") {
-      setResult("QR scanner library is loading. Please try again.", true);
-      return;
-    }
-
-    const code = decodeQrFromCanvas(ctx, canvas.width, canvas.height);
-
-    if (code && code.data) {
-      handleResult(code.data, code.location || null);
-    } else {
-      setResult("No QR code found in image. Try a clearer photo.", true);
-    }
-  };
-
-  img.src = URL.createObjectURL(file);
-}
-
+// Event listeners
 startBtn.addEventListener("click", startCamera);
 stopBtn.addEventListener("click", stopCamera);
 restartBtn.addEventListener("click", restartCamera);
+
 if (fileInput) {
   fileInput.addEventListener("change", (e) => {
     if (e.target.files.length > 0) {
@@ -355,4 +166,4 @@ if (fileInput) {
   });
 }
 
-console.log("Camera view loaded. iOS:", isIOS);
+console.log("Scanner ready");
