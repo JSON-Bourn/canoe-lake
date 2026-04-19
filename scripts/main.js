@@ -10,15 +10,11 @@
 
 document.addEventListener("DOMContentLoaded", function() { 
 
+  // ************ GET HTML ELEMENTS & COORDINATES ************
+
   // Get HTML Button elements
   const resetBtn = $(".reset");
   const solveBtn = $(".solve");
-
-  //Get initial x,y of all cards.
-  const f1Elem = document.getElementById("f1"); 
-  const f1InitPos = f1Elem.getBoundingClientRect();
-  const f1InitX = f1InitPos.x;
-  const f1InitY = f1InitPos.y;
 
   // Set default offsets for liveSnap
   // -- Y offset by row
@@ -71,7 +67,28 @@ document.addEventListener("DOMContentLoaded", function() {
   var colOffset = [col1OffsetX, col2OffsetX, col3OffsetX];
   }
 
-  // ******* LOGIC FOR CARDS ********
+  // ******** SOLUTION OBJECT ********
+  const solution = {
+    fragment1: "jack-pine",
+    fragment2: "empty-cabin",
+    fragment3: "woman-weeping",
+    fragment4: "campfire",
+    fragment5: "bottle",
+    fragment6: "lake-splash",
+    fragment7: "raised-fists",
+    fragment8: "red-canoe",
+    fragment9: "oar"
+  }
+  var userProgress = {
+    solveCell1: "",
+    solveCell2: "",
+    solveCell3: "",
+    isChapter1Solved: false,
+    isChapter2Solved: false,
+    isChapter3Solved: false
+  }
+
+  // ******** LOGIC FOR CARDS ********
   /**
    * Card class represents the draggable card elements on the solve page.
    * 
@@ -116,7 +133,7 @@ document.addEventListener("DOMContentLoaded", function() {
         onDragEnd: function () {
         console.log('drag ended');
           // Reapply css transitions
-          gsap.set(this.target, { transition: "all 1s ease" });
+          gsap.set(this.target, { transition: "1s ease" });
           // $(id).classList.remove("card-selected");
         update(id);
         }
@@ -137,7 +154,7 @@ document.addEventListener("DOMContentLoaded", function() {
   var cardArray = [f1, f2, f3, f4, f5, f6, f7, f8, f9];
 
 
-  // ******** UPDATE ON DRAG RELEASE FUNCTION ********
+  // ********** UPDATE ON DRAG RELEASE FUNCTION **********
   /**
    * Update() is intended to run on every Drag End of a Card
    * @param {string} id - the id of the card element being updated.
@@ -148,44 +165,55 @@ document.addEventListener("DOMContentLoaded", function() {
   const snapCard = document.getElementById(id);
   const card = snapCard.getBoundingClientRect();
   
+  // Get Solve Grid Snap Target Coordinates
+  //the HTML element of the targeted snap grid:
+  var snapTarget1 = document.getElementById('s1');
+  var rect1 = snapTarget1.getBoundingClientRect();
+  
+  var snapTarget2 = document.getElementById('s2');
+  var rect2 = snapTarget2.getBoundingClientRect();
+  
+  var snapTarget3 = document.getElementById('s3');
+  var rect3 = snapTarget3.getBoundingClientRect();
+  
+  // Coords of the snap grid target:
+  var rect1X = rect1.x;
+  var rect1Y = rect1.y;
+  
+  var rect2X = rect2.x;
+  var rect2Y = rect2.y;
+  
+  var rect3X = rect3.x;
+  var rect3Y = rect3.y;
+
   //Print coords of the snap card:
   let cardX = card.x;
   let cardY = card.y;
   // console.log("X coord of snapped card: " + cardX);
   // console.log("Y coord of snapped card: " + cardY);
-  
-  //the HTML element of the targeted snap grid:
-  const snapTarget1 = document.getElementById('s1');
-  const rect1 = snapTarget1.getBoundingClientRect();
-  
-  const snapTarget2 = document.getElementById('s2');
-  const rect2 = snapTarget2.getBoundingClientRect();
-  
-  const snapTarget3 = document.getElementById('s3');
-  const rect3 = snapTarget3.getBoundingClientRect();
-  
-  // Coords of the snap grid target:
-  let rect1X = rect1.x;
-  let rect1Y = rect1.y;
-  
-  let rect2X = rect2.x;
-  let rect2Y = rect2.y;
-  
-  let rect3X = rect3.x;
-  let rect3Y = rect3.y;
 
   // Print Coords of a snap target
   // console.log("X coord of the snap target: " + rect1X);
   // console.log("Y coord of the snap target: " + rect1Y);
 
   //Check if card is trying to snap to a solve cell location:
-  if (rect1X == cardX && rect1Y == cardY ||
-      rect2X == cardX && rect2Y == cardY ||
-      rect3X == cardX && rect3Y == cardY) 
+  if (rect1X == cardX && rect1Y == cardY) 
   {
 
-    console.log("snapped to a target!");
-
+    console.log("snapped to target 1");
+    userProgress.solveCell1 = id;
+    snapCard.classList.add("card-selected");
+  }
+  else if (rect2X == cardX && rect2Y == cardY)
+  {
+    console.log("snapped to target 2");
+    userProgress.solveCell2 = id;
+    snapCard.classList.add("card-selected");
+  }
+  else if (rect3X == cardX && rect3Y == cardY)
+  {
+    console.log("snapped to target 3");
+    userProgress.solveCell3 = id;
     snapCard.classList.add("card-selected");
   }
   else (
@@ -230,42 +258,52 @@ document.addEventListener("DOMContentLoaded", function() {
       // Test 
       // console.log(chapterSubmit);
       // console.log(chapter1);
-  
-      if (chapterSubmit[0] === chapter1[0] &&
-          chapterSubmit[1] === chapter1[1] &&
-          chapterSubmit[2] === chapter1[2]) 
+      console.log(userProgress);
+
+      if (userProgress.solveCell1 === chapter1[0] &&
+          userProgress.solveCell2 === chapter1[1] &&
+          userProgress.solveCell3 === chapter1[2]) 
       {
         isCorrect = true;
+        userProgress.isChapter1Solved = true;
       }
-      else if (chapterSubmit[0] === chapter2[0] &&
-              chapterSubmit[1] === chapter2[1] &&
-              chapterSubmit[2] === chapter2[2]) 
+      else if (userProgress.solveCell1 === chapter2[0] &&
+              userProgress.solveCell2 === chapter2[1] &&
+              userProgress.solveCell3 === chapter2[2]) 
       {
         isCorrect = true;
+        userProgress.isChapter2Solved = true;
       }
-      else if (chapterSubmit[0] === chapter3[0] &&
-              chapterSubmit[1] === chapter3[1] &&
-              chapterSubmit[2] === chapter3[2]) 
+      else if (userProgress.solveCell1 === chapter3[0] &&
+              userProgress.solveCell2 === chapter3[1] &&
+              userProgress.solveCell3 === chapter3[2]) 
       {
         isCorrect = true;
+        userProgress.isChapter3Solved = true;
       }
 
+      // Check if submitted chapter is correct
       if (isCorrect)
       {
        console.log("Chapter Complete!");
       }
-
       else {
         console.log("This is not a correct chapter");
+      }
+
+      // Check if all Chapters are correct
+      if (userProgress.isChapter1Solved &&
+          userProgress.isChapter2Solved &&
+          userProgress.isChapter3Solved)
+      {
+        console.log("Congratulations! All Chapters Complete!");
       }
     }
     catch {
       console.log("3 fragments must be selected to solve.");
     }
 
-    }
-
-
+    } // END OF SOLVE CHAPTER FUNCTION
 
 
   // *********** EVENT LISTENERS *************

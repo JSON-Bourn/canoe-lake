@@ -146,8 +146,10 @@ body {
 
 .drag-card {
   display:flex;
+  flex-wrap:wrap;
   justify-content: center;
   align-items: center;
+  text-align:center;
   width: 100px;
   height: 100px;
   background-color: var(--card-bg);
@@ -490,8 +492,10 @@ button:disabled {
 
 .drag-card {
   display:flex;
+  flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+  text-align: center;
   width: 80px;
   height:80px;
   background-color: var(--card-bg);
