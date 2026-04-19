@@ -403,6 +403,11 @@ body.chapter #cardImage {
 
 /* 7. Buttons */
 
+.controls {
+  display:flex;
+  flex-direction: row;
+}
+
 .controls button {
   background: none;
   border: 1px solid var(--highlight-yellow);
@@ -412,6 +417,25 @@ body.chapter #cardImage {
   cursor: pointer;
   font-size: 0.9rem;
   transition: 0.2s;
+}
+.controls button:hover {
+  background-color: #222;
+  border-color: #F1DD4280;
+}
+
+.controls a {
+  background: none;
+  border: 1px solid var(--highlight-yellow);
+  color: var(--highlight-yellow);
+  padding: 10px 15px;
+  margin: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.2s;
+}
+.controls a:hover {
+  background-color: #222;
+  border-color: #F1DD4280;
 }
 
 .modal button {
@@ -438,10 +462,7 @@ body.chapter #cardImage {
   height: 150px;
 }
 
-.controls button:hover {
-  background-color: #222;
-  border-color: #F1DD4280;
-}
+
 
 
 /* 8. jsQR Styles */
