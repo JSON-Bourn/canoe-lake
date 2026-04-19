@@ -408,7 +408,7 @@ body.chapter #cardImage {
   border: 1px solid var(--highlight-yellow);
   color: var(--highlight-yellow);
   padding: 10px 15px;
-  margin: 5px;
+  margin: 4px;
   cursor: pointer;
   font-size: 0.9rem;
   transition: 0.2s;

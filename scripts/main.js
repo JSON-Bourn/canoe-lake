@@ -285,7 +285,6 @@ document.addEventListener("DOMContentLoaded", function() {
         isCorrect = true;
         userProgress.isChapter3Solved = true;
         chapter3Progress.text("Solved");
-
       }
 
       // Check if submitted chapter is correct
@@ -304,6 +303,8 @@ document.addEventListener("DOMContentLoaded", function() {
       {
         console.log("Congratulations! All Chapters Complete!");
       }
+
+      document.cookie = `userProgress=${userProgress}`;
     }
     catch {
       console.log("3 fragments must be selected to solve.");
@@ -311,6 +312,33 @@ document.addEventListener("DOMContentLoaded", function() {
 
   } // END OF SOLVE CHAPTER FUNCTION
 
+
+  // ********** COOKIE FUNCTIONS **********
+
+  //https://www.w3schools.com/js/js_cookies.asp
+
+  function setCookie(exdays) {
+  const d = new Date();
+  d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+  let expires = "expires="+d.toUTCString();
+  document.cookie = `userProgress=${JSON.stringify(userProgress)};` + expires + ";path=/";
+  };
+
+  async function getCookie() {
+    // https://developer.mozilla.org/en-US/docs/Web/API/CookieStore/get
+    savedProgress = await cookieStore.get("userProgress");
+    if(savedProgress) {
+      // console.log(savedProgress);
+      // console.log(JSON.parse(savedProgress.value));
+      userProgress = JSON.parse(savedProgress.value);
+      updateProgress();
+      console.log(userProgress);
+    }
+    // JSON.parse(document.cookie);
+    else {console.log("cookie not found")};
+  };
+
+  // ********** BUTTON FUNCTIONS **********
   function showProgress() {
     console.log("progress");
     $("#progress").toggle();
@@ -319,6 +347,20 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log("progress");
     $("#progress").hide();
   };
+  function updateProgress() {
+    if(userProgress.isChapter1Solved)
+    {
+      chapter1Progress.text("Solved");
+    }
+    if(userProgress.isChapter2Solved)
+    {
+      chapter2Progress.text("Solved");
+    }
+    if(userProgress.isChapter3Solved)
+    {
+      chapter3Progress.text("Solved");
+    }
+  }
 
 
   // *********** EVENT LISTENERS *************
@@ -335,5 +377,12 @@ document.addEventListener("DOMContentLoaded", function() {
   document.querySelector("#closeProgress").addEventListener("click", () => {
     closeProgress();
   });
+  document.querySelector("#makeCookie").addEventListener("click", () => {
+    setCookie(7);
+  });
+  document.querySelector("#printCookie").addEventListener("click", () => {
+    getCookie();
+  });
+
 
 }); // END DOM Loaded Function
