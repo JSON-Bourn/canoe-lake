@@ -4,13 +4,15 @@
 // ********************************
 
 // Main Logic File for Solve Page
+// https://gsap.com/docs/v3/Plugins/Draggable/
+// https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
+
 
 document.addEventListener("DOMContentLoaded", function() { 
 
   //Get initial x,y of all cards.
   const f1Elem = document.getElementById("f1"); 
   const f1InitPos = f1Elem.getBoundingClientRect();
-  //https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect
   const f1InitX = f1InitPos.x;
   const f1InitY = f1InitPos.y;
 
@@ -83,6 +85,7 @@ document.addEventListener("DOMContentLoaded", function() {
       // Depending on which row / col the card is in, set liveSnap grid differently.
       this.row = row;
       this.col = col;
+      // Creating the draggable gsap target
       this.draggable = Draggable.create("#" + id, 
       {
         type: 'x,y',
@@ -103,10 +106,13 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log('clicked');
         },
         onDragStart: function () {
-          // $(id).classList.add("card-selected");
+          // Remove css transitions
+          gsap.set(this.target, { clearProps: "transition" });
         },
         onDragEnd: function () {
         console.log('drag ended');
+          // Reapply css transitions
+          gsap.set(this.target, { transition: "all 1s ease" });
           // $(id).classList.remove("card-selected");
         update(id);
         }
@@ -165,21 +171,15 @@ document.addEventListener("DOMContentLoaded", function() {
   let rect3Y = rect3.y;
 
   // Print Coords of a snap target
-  console.log("X coord of the snap target: " + rect1X);
-  console.log("Y coord of the snap target: " + rect1Y);
+  // console.log("X coord of the snap target: " + rect1X);
+  // console.log("Y coord of the snap target: " + rect1Y);
 
-  // Test function
-  // for (const key in rect) {
-  //     let data;
-  //     data = `${key} : ${rect[key]}`;
-  //     console.log(data);
-  //   }
-
-  //Check if card is snapped in a snap box:
+  //Check if card is trying to snap to a solve cell location:
   if (rect1X == cardX && rect1Y == cardY ||
       rect2X == cardX && rect2Y == cardY ||
       rect3X == cardX && rect3Y == cardY) 
   {
+
     console.log("snapped to a target!");
 
     snapCard.classList.add("card-selected");
@@ -190,6 +190,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
   } // *********** END OF UPDATE FUNCTION ***********
 
+
+  // *********** RESET BUTTON FUNCTION ***********
   // Create a function that spreads out the positions of all 9 cards
   function resetCards() {
     cardArray.forEach( (card, i) => {
@@ -197,14 +199,12 @@ document.addEventListener("DOMContentLoaded", function() {
       // Reset card position
       gsap.set(card.draggable[0].target, { clearProps: "x,y" });
       // Remove selected class
-      // $("#" + card.id).removeClass("card-selected")
       card.elem.removeClass("card-selected")
-      console.log(card);
+      // console.log(card);
     });
   }
 
   document.querySelector(".reset").addEventListener("click", () => {
-    console.log("button pressed");
     resetCards();
   });
 
