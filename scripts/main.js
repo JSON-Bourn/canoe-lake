@@ -15,6 +15,9 @@ document.addEventListener("DOMContentLoaded", function() {
   // Get HTML Button elements
   const resetBtn = $(".reset");
   const solveBtn = $(".solve");
+  const chapter1Progress = $(".chapter1Progress");
+  const chapter2Progress = $(".chapter2Progress");
+  const chapter3Progress = $(".chapter3Progress");
 
   // Set default offsets for liveSnap
   // -- Y offset by row
@@ -111,7 +114,6 @@ document.addEventListener("DOMContentLoaded", function() {
       {
         type: 'x,y',
         bounds: $('html'),
-        inertia: true,
         liveSnap:
         {
         //snaps to the closest point in the array, but only when it's within 15px (new in GSAP 1.20.0 release):
@@ -121,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function() {
           { x: colOffset[col].snap2, y: rowOffset[row] },
           { x: colOffset[col].snap3, y: rowOffset[row] }
         ],
-        radius: 20
+        radius: 40
         },
         onClick: function () {
         console.log('clicked');
@@ -266,6 +268,7 @@ document.addEventListener("DOMContentLoaded", function() {
       {
         isCorrect = true;
         userProgress.isChapter1Solved = true;
+        chapter1Progress.text("Solved");
       }
       else if (userProgress.solveCell1 === chapter2[0] &&
               userProgress.solveCell2 === chapter2[1] &&
@@ -273,6 +276,7 @@ document.addEventListener("DOMContentLoaded", function() {
       {
         isCorrect = true;
         userProgress.isChapter2Solved = true;
+        chapter2Progress.text("Solved");
       }
       else if (userProgress.solveCell1 === chapter3[0] &&
               userProgress.solveCell2 === chapter3[1] &&
@@ -280,6 +284,8 @@ document.addEventListener("DOMContentLoaded", function() {
       {
         isCorrect = true;
         userProgress.isChapter3Solved = true;
+        chapter3Progress.text("Solved");
+
       }
 
       // Check if submitted chapter is correct
@@ -303,7 +309,16 @@ document.addEventListener("DOMContentLoaded", function() {
       console.log("3 fragments must be selected to solve.");
     }
 
-    } // END OF SOLVE CHAPTER FUNCTION
+  } // END OF SOLVE CHAPTER FUNCTION
+
+  function showProgress() {
+    console.log("progress");
+    $("#progress").toggle();
+  };
+  function closeProgress() {
+    console.log("progress");
+    $("#progress").hide();
+  };
 
 
   // *********** EVENT LISTENERS *************
@@ -313,6 +328,12 @@ document.addEventListener("DOMContentLoaded", function() {
   });
   document.querySelector(".solve").addEventListener("click", () => {
     solveChapter();
+  });
+  document.querySelector(".progress").addEventListener("click", () => {
+    showProgress();
+  });
+  document.querySelector("#closeProgress").addEventListener("click", () => {
+    closeProgress();
   });
 
 }); // END DOM Loaded Function

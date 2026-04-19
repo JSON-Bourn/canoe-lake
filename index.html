@@ -8,15 +8,14 @@
   <link rel="stylesheet" href="./resources/demos/style.css">
   <link rel="stylesheet" href="./css/styles.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/Draggable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/Draggable.min.js"></script>
   <script src="./scripts/main.js"></script>
   <script type="module" src="./scripts/drag.js"></script>
 
 </head>
 <body>
   <header>
-    <h2 id="logo">Canoe Lake</h2>
     <nav class="nav-bar">
       <ul class="nav-list">
         <li>
@@ -58,9 +57,28 @@
   </div>
   <div class="controls">
     <button class="reset controls">Reset</button>
-    <button class="solve controls inactive">Solve Chapter</button>
+    <button class="progress controls">Progress</button>
+    <button class="solve controls inactive">Solve</button>
   </div>
 </section>
+
+<dialog id="progress" class="modal">
+  <h2>Solve Progress</h2>
+  <ul>
+    <li>
+      Chapter 1: <span class="chapter1Progress">Unsolved</span>
+    </li>
+    <li>
+      Chapter 2: <span class="chapter2Progress">Unsolved</span>
+    </li>
+    <li>
+      Chapter 3: <span class="chapter3Progress">Unsolved</span>
+    </li>
+  </ul>
+  </p>
+  <button id="closeProgress">Close</button>
+</dialog>
+
 <!-- <button class="shuffle">Shuffle Cards</button> -->
 
 
