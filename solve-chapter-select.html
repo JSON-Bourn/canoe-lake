@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canoe Lake</title>
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.2/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="./resources/demos/style.css">
+  <link rel="stylesheet" href="./css/styles.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.15/dist/Draggable.min.js"></script>
+  <script src="./scripts/main.js"></script>
+  <script type="module" src="./scripts/drag.js"></script>
+
+</head>
+<body>
+  <header>
+    <nav class="nav-bar">
+      <ul class="nav-list">
+        <li>
+          <h3>
+            <a href="./">Solve</a>
+          </h3>
+        </li>
+        <li>
+          <h3>
+            <a href="./template.html">Fragment</a>
+          </h3>
+        </li>
+        <li>
+          <h3>
+            <a href="./credits.html">Credits</a>
+          </h3>
+        </li>
+      </ul>
+    </nav>
+  </header>
+
+  <h1 id="chapter-select-title">Select the Chapter You Wish to Solve</h1>
+<section class="main">
+  <div class="chapter-select">
+    <a href="chapter-picture-lake.html">
+      <img src="./assets//img/CanoeLake_Chapter_Lake_Large.png" alt="lake">
+      <h2>The Lake</h2>
+    </a>
+    <a href="chapter-lodge.html">
+      <img src="./assets/img/CanoeLake_Chapter_Lodge_Large.png" alt="lodge">
+      <h2>The Lodge</h2>
+    </a>
+    <a href="chapter-lake-shore.html">
+      <img src="./assets/img/CanoeLake_Chapter_Shoreline_Large.png" alt="shoreline">
+      <h2>Shoreline</h2>
+    </a>
+  </div>
+</section>
+
+<dialog id="progress" class="modal">
+  <h2 class="message">Solve Progress</h2>
+  <ul>
+    <li>
+      Chapter 1: <span class="chapter1Progress">Unsolved</span>
+    </li>
+    <li>
+      Chapter 2: <span class="chapter2Progress">Unsolved</span>
+    </li>
+    <li>
+      Chapter 3: <span class="chapter3Progress">Unsolved</span>
+    </li>
+  </ul>
+  </p>
+  <button id="closeProgress">Close</button>
+  <button id="makeCookie">Save</button>
+  <button id="printCookie">Load</button>
+</dialog>
+
+<!-- <button class="shuffle">Shuffle Cards</button> -->
+
+</body>
+</html>

@@ -7,6 +7,7 @@
 /* 1. BODY */
 /* 2. MAIN */
 /* 2-a. Grid */
+/* 2-b. Chapter-Select */
 /* 3. Fragment vs Chapter styling */
 /* 4. Layout */
 /* 5. Titles */
@@ -172,6 +173,30 @@ body {
   justify-content: center;
   margin-top: 20px;
 }
+
+/* 2-b. Chapter-Select */
+#chapter-select-title {
+  text-align: center;
+}
+.chapter-select {
+  display:grid;
+  height:60vh;
+  grid: 1fr 1fr 1fr / 1fr;
+  gap:10px;
+}
+.chapter-select a {
+  display:flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.chapter-select img {
+  height:150px;
+  width:180px;
+}
+.chapter-select h2 {
+  text-align:center;
+}
+
 
 /* 3. Fragment vs Chapter styling */
 body.fragment {
