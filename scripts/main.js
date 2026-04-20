@@ -144,15 +144,15 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   // Constructors for 9 cards:
-  const f1 = new Card("f1", 0, 0);
-  const f2 = new Card("f2", 0, 1);
-  const f3 = new Card("f3", 0, 2);
-  const f4 = new Card("f4", 1, 0);
-  const f5 = new Card("f5", 1, 1);
-  const f6 = new Card("f6", 1, 2);
-  const f7 = new Card("f7", 2, 0);
-  const f8 = new Card("f8", 2, 1);
-  const f9 = new Card("f9", 2, 2);
+  const f1 = new Card("f1", 1, 0);
+  const f2 = new Card("f2", 0, 2);
+  const f3 = new Card("f3", 2, 2);
+  const f4 = new Card("f4", 0, 1);
+  const f5 = new Card("f5", 0, 0);
+  const f6 = new Card("f6", 1, 1); 
+  const f7 = new Card("f7", 1, 2); 
+  const f8 = new Card("f8", 2, 0); 
+  const f9 = new Card("f9", 2, 1); 
   var cardArray = [f1, f2, f3, f4, f5, f6, f7, f8, f9];
 
 

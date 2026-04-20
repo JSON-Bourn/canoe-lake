@@ -37,21 +37,28 @@
     </nav>
   </header>
 
-  <h1 id="chapter-select-title">Select the Chapter You Wish to Solve</h1>
+  <h1>Chapter: The Lodge</h1>
 <section class="main">
-  <div class="chapter-select">
-    <a href="solve-lake.html">
-      <img src="./assets//img/CanoeLake_Chapter_Lake_Large.png" alt="lake">
-      <h2>The Lake</h2>
-    </a>
-    <a href="solve-lodge.html">
-      <img src="./assets/img/CanoeLake_Chapter_Lodge_Large.png" alt="lodge">
-      <h2>The Lodge</h2>
-    </a>
-    <a href="solve-shoreline.html">
-      <img src="./assets/img/CanoeLake_Chapter_Shoreline_Large.png" alt="shoreline">
-      <h2>Shoreline</h2>
-    </a>
+  <div class="fragment-grid">
+    <div id="s1" class="grid-cell">F1</div>
+    <div id="s2" class="grid-cell">F2</div>
+    <div id="s3" class="grid-cell">F3</div>
+  </div>
+  <div class="card-start">
+    <div id=f5 class="draggable drag-card">bottle</div>
+    <div id=f4 class="draggable drag-card">camp fire</div>
+    <div id=f2 class="draggable drag-card">empty cabin</div>
+    <div id=f1 class="draggable drag-card">jack pine</div>
+    <div id=f6 class="draggable drag-card">lake splash</div>
+    <div id=f7 class="draggable drag-card">raised fists</div>
+    <div id=f8 class="draggable drag-card">red canoe</div>
+    <div id=f9 class="draggable drag-card">oar</div>
+    <div id=f3 class="draggable drag-card">woman weeping</div>
+  </div>
+  <div class="controls">
+    <button class="reset controls">Reset</button>
+    <button class="progress controls">Progress</button>
+    <button class="solve controls inactive">Solve</button>
   </div>
 </section>
 
@@ -75,6 +82,11 @@
 </dialog>
 
 <!-- <button class="shuffle">Shuffle Cards</button> -->
+
+
+
+
+
 
 </body>
 </html>
