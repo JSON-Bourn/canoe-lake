@@ -10,6 +10,22 @@
 
 document.addEventListener("DOMContentLoaded", function() { 
 
+  // ********** HOLD, SAVE & LOAD USER PROGRESS **********
+    var userProgress = {
+    solveCell1: "",
+    solveCell2: "",
+    solveCell3: "",
+    isChapter1Solved: false,
+    isChapter2Solved: false,
+    isChapter3Solved: false
+  }
+  // Update User Progress with saved cookie (if it exists)
+  try {
+    getCookie().then(updateProgress());
+  }
+  catch {console.log("No progress is saved yet")};
+
+
   // ************ GET HTML ELEMENTS & COORDINATES ************
 
   // Get HTML Button elements
@@ -81,14 +97,6 @@ document.addEventListener("DOMContentLoaded", function() {
     fragment7: "raised-fists",
     fragment8: "red-canoe",
     fragment9: "oar"
-  }
-  var userProgress = {
-    solveCell1: "",
-    solveCell2: "",
-    solveCell3: "",
-    isChapter1Solved: false,
-    isChapter2Solved: false,
-    isChapter3Solved: false
   }
 
   // ******** LOGIC FOR CARDS ********
@@ -249,7 +257,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   // ************ SOLVE BUTTON FUNCTION ************
-  function solveChapter() {
+  async function solveChapter() {
 
   // Check the window path to specify solution logic
 
@@ -262,8 +270,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     // Run solution logic
     try {
-      let answer = document.querySelectorAll(".card-selected");
-      let chapterSubmit = [answer[0].id, answer[1].id, answer[2].id];
+      // let answer = document.querySelectorAll(".card-selected");
+      // let chapterSubmit = [answer[0].id, answer[1].id, answer[2].id];
       let chapter1 = ["f1", "f2", "f3"];
       let chapter2 = ["f4", "f5", "f6"];
       let chapter3 = ["f7", "f8", "f9"];
@@ -308,6 +316,8 @@ document.addEventListener("DOMContentLoaded", function() {
       if (isCorrect)
       {
        console.log("Chapter Complete!");
+       setCookie(7);
+
       }
       else {
         console.log("This is not a correct chapter");
@@ -321,7 +331,7 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log("Congratulations! All Chapters Complete!");
       }
 
-      document.cookie = `userProgress=${userProgress}`;
+      setCookie();
     }
     catch {
       console.log("3 fragments must be selected to solve.");
@@ -338,68 +348,108 @@ document.addEventListener("DOMContentLoaded", function() {
   const d = new Date();
   d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
   let expires = "expires="+d.toUTCString();
-  document.cookie = `userProgress=${JSON.stringify(userProgress)};` + expires + ";path=/";
+  document.cookie =
+    `isChapter1Solved=${userProgress.isChapter1Solved};` + expires + ";path=/";
+  document.cookie = 
+    `isChapter2Solved=${userProgress.isChapter2Solved};` + expires + ";path=/";
+  document.cookie = 
+    `isChapter3Solved=${userProgress.isChapter3Solved};` + expires + ";path=/";
+  console.log("Saved progress");
   };
 
+  // ASYNC getCookie for performance
   async function getCookie() {
     // https://developer.mozilla.org/en-US/docs/Web/API/CookieStore/get
-    savedProgress = await cookieStore.get("userProgress");
+    savedProgress = await cookieStore.getAll();
     if(savedProgress) {
-      // console.log(savedProgress);
-      // console.log(JSON.parse(savedProgress.value));
-      userProgress = JSON.parse(savedProgress.value);
+      savedProgress.forEach(cookie => {
+        switch (cookie.name) {
+          case "isChapter1Solved":
+            userProgress.isChapter1Solved = JSON.parse(cookie.value);
+            break;
+          case "isChapter2Solved":
+            userProgress.isChapter2Solved = JSON.parse(cookie.value);
+            break;
+          case "isChapter3Solved":
+            userProgress.isChapter3Solved = JSON.parse(cookie.value);
+            break;
+          default:
+            break;
+        }
+      });
       updateProgress();
-      console.log(userProgress);
     }
-    // JSON.parse(document.cookie);
     else {console.log("cookie not found")};
+    console.log(userProgress);
   };
 
+  // SYNC getCookie
+  // function getCookie(name) {
+  // const value = `; ${document.cookie}`;
+  // console.log(value);
+  // const parts = value.split(`; ${name}=`);
+  // // if (parts.length === 2) return parts.pop().split(';').shift();
+  // console.log(parts);
+  // }
+
+
   // ********** BUTTON FUNCTIONS **********
+  
   function showProgress() {
     console.log("progress");
     $("#progress").toggle();
   };
+
   function closeProgress() {
     console.log("progress");
     $("#progress").hide();
   };
+
   function updateProgress() {
-    if(userProgress.isChapter1Solved)
+    if(userProgress.isChapter1Solved === true)
     {
       chapter1Progress.text("Solved");
     }
-    if(userProgress.isChapter2Solved)
+    if(userProgress.isChapter2Solved === true)
     {
       chapter2Progress.text("Solved");
     }
-    if(userProgress.isChapter3Solved)
+    if(userProgress.isChapter3Solved === true)
     {
       chapter3Progress.text("Solved");
     }
+    console.log(userProgress);
   }
 
 
   // *********** EVENT LISTENERS *************
+
+  // RESET BUTTON
   document.querySelector(".reset").addEventListener("click", () => {
     resetCards();
     solveBtn[0].classList.add("inactive");
   });
+  // SOLVE BUTTON
   document.querySelector(".solve").addEventListener("click", () => {
     solveChapter();
   });
+  // SHOW PROGRESS BUTTON
   document.querySelector(".progress").addEventListener("click", () => {
     showProgress();
   });
+  // CLOSE PROGRESS BUTTON
   document.querySelector("#closeProgress").addEventListener("click", () => {
     closeProgress();
   });
-  document.querySelector("#makeCookie").addEventListener("click", () => {
-    setCookie(7);
-  });
-  document.querySelector("#printCookie").addEventListener("click", () => {
-    getCookie();
-  });
+  // // SAVE BUTTON
+  // document.querySelector("#makeCookie").addEventListener("click", () => {
+  //   setCookie(7);
+  // });
+  // // LOAD BUTTON
+  // document.querySelector("#printCookie").addEventListener("click", () => {
+  //   getCookie();
+  //   updateProgress();
+  // });
 
 
 }); // END DOM Loaded Function
