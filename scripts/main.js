@@ -250,6 +250,17 @@ document.addEventListener("DOMContentLoaded", function() {
 
   // ************ SOLVE BUTTON FUNCTION ************
   function solveChapter() {
+
+  // Check the window path to specify solution logic
+
+  // Source - https://stackoverflow.com/a/16611569
+  // Posted by Daniel Aranda, modified by community. See post 'Timeline' for change history
+  // Retrieved 2026-04-19, License - CC BY-SA 3.0
+  var path = window.location.pathname;
+  var page = path.split("/").pop();
+  console.log( page );
+
+    // Run solution logic
     try {
       let answer = document.querySelectorAll(".card-selected");
       let chapterSubmit = [answer[0].id, answer[1].id, answer[2].id];
@@ -262,7 +273,9 @@ document.addEventListener("DOMContentLoaded", function() {
       // console.log(chapter1);
       console.log(userProgress);
 
-      if (userProgress.solveCell1 === chapter1[0] &&
+      // Check if the input solves Chapter 1
+      if (page == "solve-lake.html" &&
+          userProgress.solveCell1 === chapter1[0] &&
           userProgress.solveCell2 === chapter1[1] &&
           userProgress.solveCell3 === chapter1[2]) 
       {
@@ -270,7 +283,9 @@ document.addEventListener("DOMContentLoaded", function() {
         userProgress.isChapter1Solved = true;
         chapter1Progress.text("Solved");
       }
-      else if (userProgress.solveCell1 === chapter2[0] &&
+      // Check if the input solves Chapter 2
+      else if (page == "solve-lodge.html" &&
+              userProgress.solveCell1 === chapter2[0] &&
               userProgress.solveCell2 === chapter2[1] &&
               userProgress.solveCell3 === chapter2[2]) 
       {
@@ -278,7 +293,9 @@ document.addEventListener("DOMContentLoaded", function() {
         userProgress.isChapter2Solved = true;
         chapter2Progress.text("Solved");
       }
-      else if (userProgress.solveCell1 === chapter3[0] &&
+      // Check if the input solves Chapter 3
+      else if (page == "solve-shoreline.html" &&
+              userProgress.solveCell1 === chapter3[0] &&
               userProgress.solveCell2 === chapter3[1] &&
               userProgress.solveCell3 === chapter3[2]) 
       {
