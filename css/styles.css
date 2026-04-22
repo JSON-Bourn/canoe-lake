@@ -179,8 +179,9 @@ body {
 }
 .chapter-select {
   display:grid;
-  height:60vh;
-  grid: 1fr 1fr 1fr / 1fr;
+  justify-content: center;
+  height:100%;
+  grid: repeat(3, 20vh) / auto;
   gap:10px;
 }
 .chapter-select a {
@@ -189,8 +190,9 @@ body {
   align-items: center;
 }
 .chapter-select img {
-  height:150px;
-  width:180px;
+  height:100%;
+  width:100%;
+  margin:0;
 }
 .chapter-select h2 {
   text-align:center;
@@ -310,21 +312,7 @@ body.camera-view {
   justify-content: space-around;
 }
 
-#lake-chapter-btn {
-  display:none;
-  width:100%;
-  text-align: center;
-}
-#lodge-chapter-btn {
-  display:none;
-  width:100%;
-  text-align: center;
-}
-#shoreline-chapter-btn {
-  display:none;
-  width:100%;
-  text-align: center;
-}
+
 
 /* 5. Titles */
 .title {
@@ -496,6 +484,30 @@ body.chapter #cardImage {
   transition: 0.2s;
 }
 
+#lake-chapter-btn {
+  display:none;
+  width:100%;
+  text-align: center;
+  animation: fadeIn 0.8s ease 3 alternate;
+}
+#lodge-chapter-btn {
+  display:none;
+  width:100%;
+  text-align: center;
+  animation: fadeIn 0.8s ease 3 alternate;
+}
+#shoreline-chapter-btn {
+  display:none;
+  width:100%;
+  text-align: center;
+  animation: fadeIn 0.8s ease 3 alternate;
+}
+
+#solve-full-btn {
+  display:none;
+  animation: fadeIn 0.8s ease 3 alternate;
+}
+
 .inactive {
   color: var(--inactive-button) !important;
   border: 1px solid var(--inactive-button) !important;
@@ -556,9 +568,17 @@ button:disabled {
 /* Styles for screens 600px wide or less (e.g., phones) */
 @media (max-width: 600px) {
 
-  html, body {
-    height:100vh;
-    overflow: hidden;
+  h1 {
+  font-size: 1.6em;
+  }
+
+  h2 {
+    font-size: 1.4em;
+  }
+
+  h3,
+  p {
+    font-size: 1em;
   }
 
   body.camera-view {

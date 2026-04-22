@@ -450,8 +450,21 @@ document.addEventListener("DOMContentLoaded", function() {
       $("#h1-shoreline").text("Solved: Shoreline");
       $("#dialog-shoreline").text("You Solved Shoreline!");
       $("#shoreline-chapter-btn").show();
-
     }
+    // If user has completed all chapters, reveal the final solve button
+    if(userProgress.isChapter1Solved && 
+      userProgress.isChapter2Solved &&
+      userProgress.isChapter3Solved)
+    {
+      $("#chapter-select-title").text("All Chapters Solved. Solve the Full Story!")
+      $(".chapter-select").hide();
+      $("#lake-chapter-btn").hide();
+      $("#lodge-chapter-btn").hide();
+      $("#shoreline-chapter-btn").hide();
+      $("#solve-full-btn").show();
+    }
+
+
     console.log(userProgress);
   }
 
