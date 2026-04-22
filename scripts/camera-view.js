@@ -1,6 +1,5 @@
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
-const restartBtn = document.getElementById("restartBtn");
 const fileInput = document.getElementById("fileInput");
 const resultEl = document.getElementById("result");
 const scanLink = document.getElementById("scanLink");
@@ -111,7 +110,6 @@ async function startCamera() {
 
     startBtn.disabled = true;
     stopBtn.disabled = false;
-    restartBtn.disabled = true;
 
   } catch (err) {
     setResult("Camera error: " + err, true);
@@ -132,11 +130,6 @@ async function stopCamera() {
 
   startBtn.disabled = false;
   stopBtn.disabled = true;
-  restartBtn.disabled = false;
-}
-
-function restartCamera() {
-  stopCamera().then(startCamera);
 }
 
 // Image file fallback
@@ -156,7 +149,6 @@ async function scanImageFile(file) {
 // Event listeners
 startBtn.addEventListener("click", startCamera);
 stopBtn.addEventListener("click", stopCamera);
-restartBtn.addEventListener("click", restartCamera);
 
 if (fileInput) {
   fileInput.addEventListener("change", (e) => {

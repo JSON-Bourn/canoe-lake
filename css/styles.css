@@ -358,8 +358,7 @@ body.chapter #cardImage {
 #cameraBtn,
 #stopCameraBtn,
 #startBtn,
-#stopBtn,
-#restartBtn {
+#stopBtn {
   background: none;
   border: 1px solid var(--highlight-yellow);
   color: var(--highlight-yellow);
