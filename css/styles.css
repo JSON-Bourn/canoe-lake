@@ -198,7 +198,6 @@ body {
   text-align:center;
 }
 
-
 /* 3. Fragment vs Chapter styling */
 body.fragment {
   background-color: var(--fragment-bg);
@@ -488,23 +487,24 @@ body.chapter #cardImage {
   display:none;
   width:100%;
   text-align: center;
-  animation: fadeIn 0.8s ease 3 alternate;
 }
 #lodge-chapter-btn {
   display:none;
   width:100%;
   text-align: center;
-  animation: fadeIn 0.8s ease 3 alternate;
 }
 #shoreline-chapter-btn {
   display:none;
   width:100%;
   text-align: center;
-  animation: fadeIn 0.8s ease 3 alternate;
 }
 
 #solve-full-btn {
   display:none;
+}
+
+.glowing {
+  box-shadow: 0 0 15px 5px var(--highlight-yellow-hover);
   animation: fadeIn 0.8s ease 3 alternate;
 }
 

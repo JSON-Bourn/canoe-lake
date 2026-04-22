@@ -10,6 +10,15 @@
 
 document.addEventListener("DOMContentLoaded", function() { 
 
+  // Check the window path to specify solution logic
+
+  // Source - https://stackoverflow.com/a/16611569
+  // Posted by Daniel Aranda, modified by community. See post 'Timeline' for change history
+  // Retrieved 2026-04-19, License - CC BY-SA 3.0
+  var path = window.location.pathname;
+  var page = path.split("/").pop();
+  // console.log( page );
+
   // ********** HOLD, SAVE & LOAD USER PROGRESS **********
     var userProgress = {
     solveCell1: "",
@@ -17,7 +26,8 @@ document.addEventListener("DOMContentLoaded", function() {
     solveCell3: "",
     isChapter1Solved: false,
     isChapter2Solved: false,
-    isChapter3Solved: false
+    isChapter3Solved: false,
+    fullStorySolved: false
   }
   // Update User Progress with saved cookie (if it exists)
   try {
@@ -163,6 +173,12 @@ document.addEventListener("DOMContentLoaded", function() {
   const f9 = new Card("f9", 2, 1); 
   var cardArray = [f1, f2, f3, f4, f5, f6, f7, f8, f9];
 
+  // Constructors for full chapter cards:
+  const c1 = new Card("c1", 0, 2);
+  const c2 = new Card("c2", 0, 0);
+  const c3 = new Card("c3", 0, 1);
+  var chapterArray = [c1, c2, c3];
+
 
   // ********** UPDATE ON DRAG RELEASE FUNCTION **********
   /**
@@ -231,6 +247,12 @@ document.addEventListener("DOMContentLoaded", function() {
     snapCard.classList.remove("card-correct");
   }
 
+  // Depending on page:
+  // if (page === "solve-full-story.html") 
+  // {
+
+  // }
+
   // Check if 3 fragments are selected to activate Solve Button
   let submission = document.querySelectorAll(".card-selected");
   if (submission.length === 3) {
@@ -247,7 +269,10 @@ document.addEventListener("DOMContentLoaded", function() {
   // ************ RESET BUTTON FUNCTION ************
   // Create a function that spreads out the positions of all 9 cards
   function resetCards() {
-    cardArray.forEach( (card, i) => {
+    // If current page is full story solve, use chapter Array
+    if (page === "solve-full-story.html") 
+    {
+      chapterArray.forEach( (card) => {
       // console.log(card.id);
       // Reset card position
       gsap.set(card.draggable[0].target, { clearProps: "x,y" });
@@ -255,20 +280,25 @@ document.addEventListener("DOMContentLoaded", function() {
       card.elem.removeClass("card-selected");
       card.elem.removeClass("card-correct");
       // console.log(card);
-    });
+      });
+    }
+    // If this is any other solve page, use card Array
+    else 
+    {
+      cardArray.forEach( (card) => {
+        // console.log(card.id);
+        // Reset card position
+        gsap.set(card.draggable[0].target, { clearProps: "x,y" });
+        // Remove selected class
+        card.elem.removeClass("card-selected");
+        card.elem.removeClass("card-correct");
+        // console.log(card);
+      });
+    }
   }
 
   // ************ SOLVE BUTTON FUNCTION ************
-  async function solveChapter() {
-
-  // Check the window path to specify solution logic
-
-  // Source - https://stackoverflow.com/a/16611569
-  // Posted by Daniel Aranda, modified by community. See post 'Timeline' for change history
-  // Retrieved 2026-04-19, License - CC BY-SA 3.0
-  var path = window.location.pathname;
-  var page = path.split("/").pop();
-  console.log( page );
+  async function solve() {
 
     // Run solution logic
     try {
@@ -277,17 +307,36 @@ document.addEventListener("DOMContentLoaded", function() {
       let chapter1 = ["f1", "f2", "f3"];
       let chapter2 = ["f4", "f5", "f6"];
       let chapter3 = ["f7", "f8", "f9"];
-      let isCorrect = false;
+      let fullStory = ["c1", "c2", "c3"];
+      var isCorrect = false;
       // Test 
       // console.log(chapterSubmit);
       // console.log(chapter1);
       console.log(userProgress);
 
+      // Check if the input solves the Full Story
+      if (page == "solve-full-story.html" && 
+        userProgress.solveCell1 === fullStory[0] &&
+        userProgress.solveCell2 === fullStory[1] &&
+        userProgress.solveCell3 === fullStory[2])
+      {
+        isCorrect = true;
+        userProgress.fullStorySolved = true;
+        console.log("Full Story Complete!")
+        fullStory.forEach(id => {
+          $("#"+ id).removeClass("card-selected");
+          $("#"+ id).addClass("card-correct");
+          $(".fragment-grid").addClass("card-correct");
+          showProgress();
+          updateProgress();
+        });
+      }
+
       // Check if the input solves Chapter 1
-      if (page == "solve-lake.html" &&
-          userProgress.solveCell1 === chapter1[0] &&
-          userProgress.solveCell2 === chapter1[1] &&
-          userProgress.solveCell3 === chapter1[2]) 
+      else if (page == "solve-lake.html" &&
+              userProgress.solveCell1 === chapter1[0] &&
+              userProgress.solveCell2 === chapter1[1] &&
+              userProgress.solveCell3 === chapter1[2]) 
       {
         isCorrect = true;
         userProgress.isChapter1Solved = true;
@@ -351,10 +400,17 @@ document.addEventListener("DOMContentLoaded", function() {
           userProgress.isChapter2Solved &&
           userProgress.isChapter3Solved)
       {
-        console.log("Congratulations! All Chapters Complete!");
-      }
+        if(userProgress.fullStorySolved) 
+        {
+          console.log("You did it! You Solved the Full Story!");
+          setCookie(7);
 
-      setCookie();
+        }
+        else
+        {
+          console.log("Congratulations! All Chapters Complete!");
+        }
+      }
     }
     catch {
       console.log("3 fragments must be selected to solve.");
@@ -377,6 +433,8 @@ document.addEventListener("DOMContentLoaded", function() {
     `isChapter2Solved=${userProgress.isChapter2Solved};` + expires + ";path=/";
   document.cookie = 
     `isChapter3Solved=${userProgress.isChapter3Solved};` + expires + ";path=/";
+  document.cookie = 
+    `fullStorySolved=${userProgress.fullStorySolved};` + expires + ";path=/";
   console.log("Saved progress");
   };
 
@@ -396,6 +454,8 @@ document.addEventListener("DOMContentLoaded", function() {
           case "isChapter3Solved":
             userProgress.isChapter3Solved = JSON.parse(cookie.value);
             break;
+          case "fullStorySolved":
+            userProgress.fullStorySolved = JSON.parse(cookie.value);
           default:
             break;
         }
@@ -429,6 +489,12 @@ document.addEventListener("DOMContentLoaded", function() {
   };
 
   function updateProgress() {
+    if(userProgress.fullStorySolved === true)
+    {
+      $("#h1-full-story").text("Full Story Solved");
+      $("#dialog-full-story").text("You... You did it!");
+      $("#epilogue-btn").show();
+    }
     if(userProgress.isChapter1Solved === true)
     {
       chapter1Progress.text("Solved");
@@ -463,8 +529,6 @@ document.addEventListener("DOMContentLoaded", function() {
       $("#shoreline-chapter-btn").hide();
       $("#solve-full-btn").show();
     }
-
-
     console.log(userProgress);
   }
 
@@ -478,7 +542,7 @@ document.addEventListener("DOMContentLoaded", function() {
   });
   // SOLVE BUTTON
   document.querySelector(".solve").addEventListener("click", () => {
-    solveChapter();
+    solve();
   });
   // SHOW PROGRESS BUTTON
   document.querySelector(".progress").addEventListener("click", () => {
