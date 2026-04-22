@@ -226,9 +226,10 @@ document.addEventListener("DOMContentLoaded", function() {
     userProgress.solveCell3 = id;
     snapCard.classList.add("card-selected");
   }
-  else (
-    snapCard.classList.remove("card-selected")
-  )
+  else {
+    snapCard.classList.remove("card-selected");
+    snapCard.classList.remove("card-correct");
+  }
 
   // Check if 3 fragments are selected to activate Solve Button
   let submission = document.querySelectorAll(".card-selected");
@@ -252,6 +253,7 @@ document.addEventListener("DOMContentLoaded", function() {
       gsap.set(card.draggable[0].target, { clearProps: "x,y" });
       // Remove selected class
       card.elem.removeClass("card-selected");
+      card.elem.removeClass("card-correct");
       // console.log(card);
     });
   }
@@ -290,6 +292,13 @@ document.addEventListener("DOMContentLoaded", function() {
         isCorrect = true;
         userProgress.isChapter1Solved = true;
         chapter1Progress.text("Solved");
+        chapter1.forEach(id => {
+          $("#"+ id).removeClass("card-selected");
+          $("#"+ id).addClass("card-correct");
+        });
+        $(".fragment-grid").addClass("card-correct");
+        showProgress();
+        updateProgress();
       }
       // Check if the input solves Chapter 2
       else if (page == "solve-lodge.html" &&
@@ -300,6 +309,13 @@ document.addEventListener("DOMContentLoaded", function() {
         isCorrect = true;
         userProgress.isChapter2Solved = true;
         chapter2Progress.text("Solved");
+        chapter2.forEach(id => {
+          $("#"+ id).removeClass("card-selected");
+          $("#"+ id).addClass("card-correct");
+        });
+        $(".fragment-grid").addClass("card-correct");
+        showProgress();
+        updateProgress();
       }
       // Check if the input solves Chapter 3
       else if (page == "solve-shoreline.html" &&
@@ -310,6 +326,13 @@ document.addEventListener("DOMContentLoaded", function() {
         isCorrect = true;
         userProgress.isChapter3Solved = true;
         chapter3Progress.text("Solved");
+        chapter3.forEach(id => {
+          $("#"+ id).removeClass("card-selected");
+          $("#"+ id).addClass("card-correct");
+        });
+        $(".fragment-grid").addClass("card-correct");
+        showProgress();
+        updateProgress();
       }
 
       // Check if submitted chapter is correct
@@ -409,14 +432,25 @@ document.addEventListener("DOMContentLoaded", function() {
     if(userProgress.isChapter1Solved === true)
     {
       chapter1Progress.text("Solved");
+      $("#h1-lake").text("Solved: The Lake");
+      $("#dialog-lake").text("You Solved The Lake!");
+      $("#lake-chapter-btn").show();
     }
     if(userProgress.isChapter2Solved === true)
     {
       chapter2Progress.text("Solved");
+      $("#h1-lodge").text("Solved: The Lodge");
+      $("#dialog-lodge").text("You Solved The Lodge!");
+      $("#lodge-chapter-btn").show();
+
     }
     if(userProgress.isChapter3Solved === true)
     {
       chapter3Progress.text("Solved");
+      $("#h1-shoreline").text("Solved: Shoreline");
+      $("#dialog-shoreline").text("You Solved Shoreline!");
+      $("#shoreline-chapter-btn").show();
+
     }
     console.log(userProgress);
   }

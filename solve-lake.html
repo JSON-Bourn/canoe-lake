@@ -37,7 +37,7 @@
     </nav>
   </header>
 
-  <h1>Chapter: The Lake</h1>
+  <h1 id="h1-lake">Chapter: The Lake</h1>
 <section class="main">
   <div class="fragment-grid">
     <div id="s1" class="grid-cell">1</div>
@@ -63,22 +63,29 @@
 </section>
 
 <dialog id="progress" class="modal">
-  <h2 class="message">Solve Progress</h2>
-  <ul>
-    <li>
-      Chapter 1: <span class="chapter1Progress">Unsolved</span>
-    </li>
-    <li>
-      Chapter 2: <span class="chapter2Progress">Unsolved</span>
-    </li>
-    <li>
-      Chapter 3: <span class="chapter3Progress">Unsolved</span>
-    </li>
-  </ul>
-  </p>
-  <button id="closeProgress">Close</button>
-  <!-- <button id="makeCookie">Save</button>
-  <button id="printCookie">Load</button> -->
+  <div class="modal-container">
+    <h2 id="dialog-lake">Solve Progress</h2>
+    <ul>
+      <li>
+        The Lodge: <span class="chapter2Progress">Unsolved</span>
+      </li>
+      <li>
+        Shoreline: <span class="chapter3Progress">Unsolved</span>
+      </li>
+      <li>
+        The Lake: <span class="chapter1Progress">Unsolved</span>
+      </li>
+    </ul>
+    <div class="modal-controls controls">
+      <button id="closeProgress">Close</button>
+      <a href="chapter-full-winnie.html" id="lake-chapter-btn" class="controls">
+        Listen to Full Chapter
+      </a>
+    </div>
+
+    <!-- <button id="makeCookie">Save</button>
+    <button id="printCookie">Load</button> -->
+  </div>
 </dialog>
 
 <!-- <button class="shuffle">Shuffle Cards</button> -->

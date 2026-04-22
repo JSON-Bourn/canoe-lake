@@ -31,6 +31,7 @@
   --container-yellow: #F1DD4244;
   --section-yellow: #F1DD4233;
   --card-bg: #444;
+  --card-correct: #4CAF50;
   --solve-grid-bg: #666;
   --solve-grid-color: #999;
   --inactive-button: #999;
@@ -111,13 +112,6 @@ body {
   flex-flow: column wrap;
   justify-content: space-around;
 }
-/* .stacked {
-  grid-row:1;
-  grid-column:1;
-  } */
-  /* .draggable {
-    
-  } */
   
   /* 2-a. Grid */
 
@@ -159,6 +153,11 @@ body {
 
 .card-selected {
   box-shadow: 0 0 15px 5px var(--highlight-yellow-hover);
+}
+
+.card-correct {
+  box-shadow: 0 0 15px 5px var(--card-correct);
+  color:var(--card-correct);
 }
 
 .instructions {
@@ -294,13 +293,37 @@ body.camera-view {
   position: fixed; /* Stay in place */
   z-index: 1500; /* Sit on top */
   left: 0;
-  top: 40%;
+  top: 10%;
   width: 60%; /* Full width */
-  height: 25%; /* Full height */
+  height: 60%; /* Full height */
   overflow: auto; /* Enable scroll if needed */
   background-color: rgb(0,0,0); /* Fallback color */
   background-color: rgba(0,0,0,0.9); /* Black w/ opacity */
   color:var(--highlight-yellow);
+  animation: fadeIn 1s ease;
+}
+
+.modal-container {
+  display:flex;
+  flex-direction: column;
+  align-items: baseline;
+  justify-content: space-around;
+}
+
+#lake-chapter-btn {
+  display:none;
+  width:100%;
+  text-align: center;
+}
+#lodge-chapter-btn {
+  display:none;
+  width:100%;
+  text-align: center;
+}
+#shoreline-chapter-btn {
+  display:none;
+  width:100%;
+  text-align: center;
 }
 
 /* 5. Titles */
@@ -522,6 +545,11 @@ button:disabled {
 @keyframes flash-bg {
   0% { background: yellow; }
   100% { background: #eee; }
+}
+
+@keyframes fadeIn {
+  0% {opacity: 0%;}
+  100% {opacity: 100%;}
 }
 
 /* 9. Media Queries */
