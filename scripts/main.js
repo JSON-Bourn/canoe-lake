@@ -393,6 +393,10 @@ document.addEventListener("DOMContentLoaded", function() {
       }
       else {
         console.log("This is not a correct chapter");
+        $(".fragment-grid").addClass("wrong");
+        setTimeout(() => {
+            $(".fragment-grid").removeClass("wrong");
+        }, 1600);
       }
 
       // Check if all Chapters are correct

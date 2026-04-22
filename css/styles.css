@@ -32,6 +32,7 @@
   --section-yellow: #F1DD4233;
   --card-bg: #444;
   --card-correct: #4CAF50;
+  --card-wrong: orange;
   --solve-grid-bg: #666;
   --solve-grid-color: #999;
   --inactive-button: #999;
@@ -158,6 +159,10 @@ body {
 .card-correct {
   box-shadow: 0 0 15px 5px var(--card-correct);
   color:var(--card-correct);
+}
+
+.wrong {
+  animation: wrong 0.8s ease;
 }
 
 .instructions {
@@ -562,6 +567,12 @@ button:disabled {
 @keyframes fadeIn {
   0% {opacity: 0%;}
   100% {opacity: 100%;}
+}
+
+@keyframes wrong {
+  0% { box-shadow: none; }
+  50% { box-shadow: 0 0 15px 5px var(--card-wrong); }
+  100% { box-shadow: none; }
 }
 
 /* 9. Media Queries */
