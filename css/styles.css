@@ -168,10 +168,13 @@ body.how-to-play .instructions p {
 /* 5. SOLVE */
 .main {
   display:flex;
-  max-width:40vw;
-  flex-flow: column wrap;
+  flex-direction: column;
   justify-content: space-around;
-  width:100%;
+}
+
+.solve-zone {
+  /* width:500px; */
+  
 }
 
 .main a {
@@ -182,6 +185,7 @@ body.how-to-play .instructions p {
 
 .fragment-grid {
   display: grid;
+  /* width:330px; */
   grid: 100px / 100px 100px 100px;
   background-color: var(--solve-grid-bg);
   padding: 10px;
@@ -248,7 +252,7 @@ body.how-to-play .instructions p {
 .chapter-select img {
   height:100%;
   width:100%;
-  object-fit: contain;
+  object-fit: fill;
   margin:0;
 }
 .chapter-select h2 {
