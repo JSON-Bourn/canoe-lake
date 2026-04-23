@@ -141,12 +141,15 @@ body.homepage a {
 }
 
 /* 3. INTRODUCTION */
-.introduction .container{
+.introduction .container {
   display:flex;
   height:100%;
+  width:80%;
   flex-direction: column;
   justify-content: space-around;
 }
+
+
 
 /* 4. HOW TO PLAY */
 .how-to-play {
@@ -490,18 +493,21 @@ body.chapter #cardImage {
 /* 10. Buttons */
 
 .controls {
-  display:flex;
+  display:inline-flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-evenly;
   flex-direction: row;
+  width:100%;
   gap:4px;
 }
 
 .controls button {
+  all:unset;
+  flex: 1 1 0;
   background: none;
   border: 1px solid var(--highlight-yellow);
   color: var(--highlight-yellow);
-  padding: 10px 15px;
+  padding: 1em 2em;
   margin: 4px;
   cursor: pointer;
   font-size: 0.9rem;
@@ -516,10 +522,10 @@ body.chapter #cardImage {
   background: none;
   border: 1px solid var(--highlight-yellow);
   color: var(--highlight-yellow);
-  padding: 10px 15px;
+  padding: 1em 2em;
   margin: 4px;
   cursor: pointer;
-  font-size: 0.9rem;
+  /* font-size: 0.9rem; */
   transition: 0.2s;
 }
 .controls a:hover {
@@ -572,8 +578,8 @@ body.chapter #cardImage {
 #pauseBtn,
 #replayBtn,
 #skipBtn {
-  width: 150px;
-  height: 150px;
+  /* width: 150px;
+  height: 150px; */
 }
 
 
