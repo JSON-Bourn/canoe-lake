@@ -172,11 +172,6 @@ body.how-to-play .instructions p {
   justify-content: space-around;
 }
 
-.solve-zone {
-  /* width:500px; */
-  
-}
-
 .main a {
   font-size: 4em;
 }
@@ -185,7 +180,7 @@ body.how-to-play .instructions p {
 
 .fragment-grid {
   display: grid;
-  /* width:330px; */
+  max-width:340px;
   grid: 100px / 100px 100px 100px;
   background-color: var(--solve-grid-bg);
   padding: 10px;
