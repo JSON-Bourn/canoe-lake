@@ -87,7 +87,7 @@ async function startCamera() {
         fps: 10,
 
         qrbox: (w, h) => {
-          const size = Math.min(w, h) * 0.8;
+          const size = Math.min(w, h) * 0.4;
           return { width: size, height: size };
         }
       },
